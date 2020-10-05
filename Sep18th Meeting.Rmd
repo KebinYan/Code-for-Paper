@@ -1,0 +1,313 @@
+---
+title: "Sep18th_Meeting"
+author: "Kebin Yan"
+date: "9/17/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, include=TRUE}
+library(ggplot2)
+library(gridExtra)
+```
+
+```{r}
+squarePlusOne <- function(data, x, y, z, output){
+  for (i in 1: nrow(data)){
+    if(data[i,]$x < 0){
+      output[i,]$x <- - ((data[i,]$x-1) * (data[i,]$x-1))
+    }
+    else{
+      output[i,]$x <- (data[i,]$x+1) * (data[i,]$x+1)
+    }
+    
+    if(data[i,]$y < 0){
+      output[i,]$y <- - ((data[i,]$y-1) * (data[i,]$y-1))
+    }
+    else{
+      output[i,]$y <- (data[i,]$y+1) * (data[i,]$y+1)
+    }
+    
+    if(data[i,]$z < 0){
+      output[i,]$z <- - ((data[i,]$z-1) * (data[i,]$z-1))
+    }
+    else{
+      output[i,]$z <- (data[i,]$z+1) * (data[i,]$z+1)
+    }
+  }
+  return(output)
+}
+```
+
+```{r}
+AccData <- read.csv("~/Desktop/WFU/URECA/Huang's Data/Data/newAccData.csv")
+SPOAcc <- AccData
+SPOAcc <- squarePlusOne(AccData, x, y, z, SPOAcc)
+
+result_Acc5sT_L2 <- read.csv("~/Desktop/WFU/URECA/Huang's Data/Data/Result/SquaredPlusOne/result_Acc5sT_L2.csv")
+
+accMax <- max(SPOAcc$x, SPOAcc$y, SPOAcc$z)
+accMin <- min(SPOAcc$x, SPOAcc$y, SPOAcc$z)
+```
+
+```{r}
+stairDown_stand <- subset(result_Acc5sT_L2, label == "stairDown" & movelet.label == "stand")
+
+index <- which(SPOAcc$timeElapsed == stairDown_stand[1,]$timeElapsed)
+
+newMovelet <- SPOAcc[index:(index+9),]
+```
+
+```{r}
+##Data
+trainingSize <- 50
+    
+##number of samples per second
+frequency <- 10
+
+##Length of movelet in seconds
+moveletLength <- 1
+
+##Measure of distance for movelet method
+distOption <- "L2" 
+
+##Activities in the training data
+trainingActivities <- c("walk",        
+                        "stairUp",    
+                        "stairDown", 
+                        "stand")
+
+##Indicator of whether you would like to use magnitude data or tri-axial data
+useMag <- FALSE
+
+moveletPoints <- frequency * moveletLength
+```
+
+```{r}
+AccTraining5sO <- data.frame(AccData[1,])
+for(j in 1:length(trainingActivities)){
+  AccTraining5sO <- rbind(AccTraining5sO, subset(AccData, label == trainingActivities[j])[1,])
+  for(i in 2:50){
+    if(subset(AccData, label == trainingActivities[j])$timeElapsed[i] - subset(AccData, label == trainingActivities[j])$timeElapsed[i-1] < 0.11){
+      AccTraining5sO <- rbind(AccTraining5sO, subset(AccData, label == trainingActivities[j])[i,])
+    }
+    else{
+      break
+    }
+  }
+}
+AccTraining5sO <- AccTraining5sO[-1,]
+
+AccTraining5sO <- AccTraining5sO[-c(1:50),]
+AccTraining5sO <- rbind(AccTraining5sO, subset(AccData, label == "walk")[c(22:(22+50-1)),])
+```
+
+```{r}
+standTrainingO <- AccTraining5sO[AccTraining5sO$label == "stand",]
+walkTrainingO <- AccTraining5sO[AccTraining5sO$label == "walk",]
+stairUpTrainingO <- AccTraining5sO[AccTraining5sO$label == "stairUp",]
+stairDownTrainingO <- AccTraining5sO[AccTraining5sO$label == "stairDown",]
+```
+
+```{r}
+AccTraining5s <- data.frame(SPOAcc[1,])
+for(j in 1:length(trainingActivities)){
+  AccTraining5s <- rbind(AccTraining5s, subset(SPOAcc, label == trainingActivities[j])[1,])
+  for(i in 2:trainingSize){
+    if(subset(SPOAcc, label == trainingActivities[j])$timeElapsed[i] - subset(SPOAcc, label == trainingActivities[j])$timeElapsed[i-1] < 0.11){
+      AccTraining5s <- rbind(AccTraining5s, subset(SPOAcc, label == trainingActivities[j])[i,])
+    }
+    else{
+      break
+    }
+  }
+}
+AccTraining5s <- AccTraining5s[-1,]
+
+AccTraining5s <- AccTraining5s[-c(1:trainingSize),]
+AccTraining5s <- rbind(AccTraining5s, subset(SPOAcc, label == "walk")[c(22:(22+trainingSize-1)),])
+```
+
+```{r}
+standTraining <- AccTraining5s[AccTraining5s$label == "stand",]
+stand.numMovelets <- nrow(standTraining) - moveletPoints + 1
+stand.discrep <- rep(NA, stand.numMovelets)
+for (j in 1:stand.numMovelets){
+  Movelet <- standTraining[j:(j+moveletPoints-1),]
+  stand.x.discrep <- sqrt(sum((newMovelet$x - Movelet$x)^2))
+  stand.y.discrep <- sqrt(sum((newMovelet$y - Movelet$y)^2))
+  stand.z.discrep <- sqrt(sum((newMovelet$z - Movelet$z)^2))
+  stand.discrep[j] <- mean(c(stand.x.discrep, stand.y.discrep, stand.z.discrep))
+  }
+  stand.metric <- min(stand.discrep)
+  stand.movelet <- which(stand.discrep == stand.metric)
+  stand.x.discrep.min <- sqrt(sum((newMovelet$x - standTraining[stand.movelet:(stand.movelet+moveletPoints-1),]$x)^2))
+  stand.y.discrep.min <- sqrt(sum((newMovelet$y - standTraining[stand.movelet:(stand.movelet+moveletPoints-1),]$y)^2))
+  stand.z.discrep.min <- sqrt(sum((newMovelet$z - standTraining[stand.movelet:(stand.movelet+moveletPoints-1),]$z)^2))
+```
+
+```{r}
+walkTraining <- AccTraining5s[AccTraining5s$label == "walk",]
+walk.numMovelets <- nrow(walkTraining) - moveletPoints + 1
+walk.discrep <- rep(NA, walk.numMovelets)
+for (j in 1:walk.numMovelets){
+  Movelet <- walkTraining[j:(j+moveletPoints-1),]
+  walk.x.discrep <- sqrt(sum((newMovelet$x - Movelet$x)^2))
+  walk.y.discrep <- sqrt(sum((newMovelet$y - Movelet$y)^2))
+  walk.z.discrep <- sqrt(sum((newMovelet$z - Movelet$z)^2))
+  walk.discrep[j] <- mean(c(walk.x.discrep, walk.y.discrep, walk.z.discrep))
+  }
+  walk.metric <- min(walk.discrep)
+  walk.movelet <- which(walk.discrep == walk.metric)
+  walk.x.discrep.min <- sqrt(sum((newMovelet$x - walkTraining[walk.movelet:(walk.movelet+moveletPoints-1),]$x)^2))
+  walk.y.discrep.min <- sqrt(sum((newMovelet$y - walkTraining[walk.movelet:(walk.movelet+moveletPoints-1),]$y)^2))
+  walk.z.discrep.min <- sqrt(sum((newMovelet$z - walkTraining[walk.movelet:(walk.movelet+moveletPoints-1),]$z)^2))
+```
+
+```{r}
+stairUpTraining <- AccTraining5s[AccTraining5s$label == "stairUp",]
+stairUp.numMovelets <- nrow(stairUpTraining) - moveletPoints + 1
+stairUp.discrep <- rep(NA, stairUp.numMovelets)
+for (j in 1:stairUp.numMovelets){
+  Movelet <- stairUpTraining[j:(j+moveletPoints-1),]
+  stairUp.x.discrep <- sqrt(sum((newMovelet$x - Movelet$x)^2))
+  stairUp.y.discrep <- sqrt(sum((newMovelet$y - Movelet$y)^2))
+  stairUp.z.discrep <- sqrt(sum((newMovelet$z - Movelet$z)^2))
+  stairUp.discrep[j] <- mean(c(stairUp.x.discrep, stairUp.y.discrep, stairUp.z.discrep))
+  }
+  stairUp.metric <- min(stairUp.discrep)
+  stairUp.movelet <- which(stairUp.discrep == stairUp.metric)
+  stairUp.x.discrep.min <- sqrt(sum((newMovelet$x - stairUpTraining[stairUp.movelet:(stairUp.movelet+moveletPoints-1),]$x)^2))
+  stairUp.y.discrep.min <- sqrt(sum((newMovelet$y - stairUpTraining[stairUp.movelet:(stairUp.movelet+moveletPoints-1),]$y)^2))
+  stairUp.z.discrep.min <- sqrt(sum((newMovelet$z - stairUpTraining[stairUp.movelet:(stairUp.movelet+moveletPoints-1),]$z)^2))
+```
+
+```{r}
+stairDownTraining <- AccTraining5s[AccTraining5s$label == "stairDown",]
+stairDown.numMovelets <- nrow(stairDownTraining) - moveletPoints + 1
+stairDown.discrep <- rep(NA, stairDown.numMovelets)
+for (j in 1:stairDown.numMovelets){
+  Movelet <- stairDownTraining[j:(j+moveletPoints-1),]
+  stairDown.x.discrep <- sqrt(sum((newMovelet$x - Movelet$x)^2))
+  stairDown.y.discrep <- sqrt(sum((newMovelet$y - Movelet$y)^2))
+  stairDown.z.discrep <- sqrt(sum((newMovelet$z - Movelet$z)^2))
+  stairDown.discrep[j] <- mean(c(stairDown.x.discrep, stairDown.y.discrep, stairDown.z.discrep))
+  }
+  stairDown.metric <- min(stairDown.discrep)
+  stairDown.movelet <- which(stairDown.discrep == stairDown.metric)
+  stairDown.x.discrep.min <- sqrt(sum((newMovelet$x - stairDownTraining[stairDown.movelet:(stairDown.movelet+moveletPoints-1),]$x)^2))
+  stairDown.y.discrep.min <- sqrt(sum((newMovelet$y - stairDownTraining[stairDown.movelet:(stairDown.movelet+moveletPoints-1),]$y)^2))
+  stairDown.z.discrep.min <- sqrt(sum((newMovelet$z - stairDownTraining[stairDown.movelet:(stairDown.movelet+moveletPoints-1),]$z)^2))
+```
+
+## One Movelet Analysis
+
+```{r, fig.height=5}
+grid.arrange(
+  ggplot(SPOAcc[index:(index+9),]) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(SPOAcc[index:(index+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 7)) + ggtitle("New Movelet"),
+
+  ggplot(standTraining[stand.movelet:(stand.movelet+9),]) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(standTraining[stand.movelet:(stand.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 7)) + ggtitle("Standing Movelet")  + annotate("text", x = -Inf, y = Inf, label = paste("discrep:", round(stand.metric, 3)), hjust = -0.5, vjust = 4, size = 3),
+  
+    ggplot(stairDownTraining[stairDown.movelet:(stairDown.movelet+9),]) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(stairDownTraining[stairDown.movelet:(stairDown.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 7)) + ggtitle("Stair Down Movelet") + annotate("text", x = -Inf, y = Inf, label = paste("discrep:", round(stairDown.metric, 3)), hjust = -0.5, vjust = 4, size = 3),
+  
+      ggplot() + theme_void(),
+  
+  ggplot(walkTraining[walk.movelet:(walk.movelet+9),]) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(walkTraining[walk.movelet:(walk.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 7)) + ggtitle("Walking Movelet")  + annotate("text", x = -Inf, y = Inf, label = paste("discrep:", round(walk.metric, 3)), hjust = -0.5, vjust = 4, size = 3),
+  
+  ggplot(stairUpTraining[stairUp.movelet:(stairUp.movelet+9),]) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(stairUpTraining[stairUp.movelet:(stairUp.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 7)) + ggtitle("Stair Up Movelet") + annotate("text", x = -Inf, y = Inf, label = paste("discrep:", round(stairUp.metric, 3)), hjust = -0.5, vjust = 4, size = 3),
+  
+  nrow = 2)
+
+```
+
+## x-axis
+
+```{r, fig.height=5}
+grid.arrange(
+  ggplot(SPOAcc[index:(index+9),]) + geom_point(aes(x = timeElapsed, y = x, color = "x")) + geom_line(aes(x = timeElapsed, y = x, color = "x")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(SPOAcc[index:(index+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = x, label = round(x,2)), size = 2, vjust = -1) + ggtitle("New Movelet"),
+  
+  ggplot(standTraining[stand.movelet:(stand.movelet+9),]) + geom_point(aes(x = timeElapsed, y = x, color = "x")) + geom_line(aes(x = timeElapsed, y = x, color = "x")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(standTraining[stand.movelet:(stand.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = x, label = round(x,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("x discrep:", round(stand.x.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Standing Movelet"),
+  
+    ggplot(stairDownTraining[stairDown.movelet:(stairDown.movelet+9),]) + geom_point(aes(x = timeElapsed, y = x, color = "x")) + geom_line(aes(x = timeElapsed, y = x, color = "x")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(stairDownTraining[stairDown.movelet:(stairDown.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = x, label = round(x,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("x discrep:", round(stairDown.x.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Stair Down Movelet"),
+  
+  ggplot() + theme_void(),
+  
+  ggplot(walkTraining[walk.movelet:(walk.movelet+9),]) + geom_point(aes(x = timeElapsed, y = x, color = "x")) + geom_line(aes(x = timeElapsed, y = x, color = "x")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(walkTraining[walk.movelet:(walk.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = x, label = round(x,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("x discrep:", round(walk.x.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Walking Movelet"),
+  
+  ggplot(stairUpTraining[stairUp.movelet:(stairUp.movelet+9),]) + geom_point(aes(x = timeElapsed, y = x, color = "x")) + geom_line(aes(x = timeElapsed, y = x, color = "x")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(stairUpTraining[stairUp.movelet:(stairUp.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = x, label = round(x,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("x discrep:", round(stairUp.x.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Stair Up Movelet"),
+  
+  nrow = 2)
+
+```
+
+## y-axis
+
+```{r, fig.height=5}
+grid.arrange(
+  ggplot(SPOAcc[index:(index+9),]) + geom_point(aes(x = timeElapsed, y = y), color = "#00BA38") + geom_line(aes(x = timeElapsed, y = y), color = "#00BA38") + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(SPOAcc[index:(index+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = y, label = round(y,2)), size = 2, vjust = -1) + ggtitle("New Movelet"),
+  
+  ggplot(standTraining[stand.movelet:(stand.movelet+9),]) + geom_point(aes(x = timeElapsed, y = y), color = "#00BA38") + geom_line(aes(x = timeElapsed, y = y), color = "#00BA38") + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(standTraining[stand.movelet:(stand.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = y, label = round(y,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("y discrep:", round(stand.y.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Standing Movelet"),
+  
+  ggplot(stairDownTraining[stairDown.movelet:(stairDown.movelet+9),]) + geom_point(aes(x = timeElapsed, y = y), color = "#00BA38") + geom_line(aes(x = timeElapsed, y = y), color = "#00BA38") + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(stairDownTraining[stairDown.movelet:(stairDown.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = y, label = round(y,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("y discrep:", round(stairDown.y.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Stair Down Movelet"),
+  
+  ggplot()+theme_void(),
+  
+  ggplot(walkTraining[walk.movelet:(walk.movelet+9),]) + geom_point(aes(x = timeElapsed, y = y), color = "#00BA38") + geom_line(aes(x = timeElapsed, y = y), color = "#00BA38") + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(walkTraining[walk.movelet:(walk.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = y, label = round(y,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("y discrep:", round(walk.y.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Walking Movelet"),
+  
+  ggplot(stairUpTraining[stairUp.movelet:(stairUp.movelet+9),]) + geom_point(aes(x = timeElapsed, y = y), color = "#00BA38") + geom_line(aes(x = timeElapsed, y = y), color = "#00BA38") + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(stairUpTraining[stairUp.movelet:(stairUp.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = y, label = round(y,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("y discrep:", round(stairUp.y.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Stair Up Movelet"),
+  
+  nrow = 2)
+
+```
+
+## z-axis
+
+```{r, fig.height=5}
+grid.arrange(
+  ggplot(SPOAcc[index:(index+9),]) + geom_point(aes(x = timeElapsed, y = z), color = "#619CFF") + geom_line(aes(x = timeElapsed, y = z), color = "#619CFF") + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(SPOAcc[index:(index+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = z, label = round(z,2)), size = 2, vjust = -1) + ggtitle("New Movelet"),
+  
+  ggplot(standTraining[stand.movelet:(stand.movelet+9),]) + geom_point(aes(x = timeElapsed, y = z), color = "#619CFF") + geom_line(aes(x = timeElapsed, y = z), color = "#619CFF") + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(standTraining[stand.movelet:(stand.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = z, label = round(z,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("z discrep:", round(stand.z.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Standing Movelet"),
+  
+  ggplot(stairDownTraining[stairDown.movelet:(stairDown.movelet+9),]) + geom_point(aes(x = timeElapsed, y = z), color = "#619CFF") + geom_line(aes(x = timeElapsed, y = z), color = "#619CFF") + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(stairDownTraining[stairDown.movelet:(stairDown.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = z, label = round(z,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("z discrep:", round(stairDown.z.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Stair Down Movelet"),
+  
+  ggplot() + theme_void(),
+  
+  ggplot(walkTraining[walk.movelet:(walk.movelet+9),]) + geom_point(aes(x = timeElapsed, y = z), color = "#619CFF") + geom_line(aes(x = timeElapsed, y = z), color = "#619CFF") + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(walkTraining[walk.movelet:(walk.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = z, label = round(z,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("z discrep:", round(walk.z.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Walking Movelet"),
+  
+  ggplot(stairUpTraining[stairUp.movelet:(stairUp.movelet+9),]) + geom_point(aes(x = timeElapsed, y = z), color = "#619CFF") + geom_line(aes(x = timeElapsed, y = z), color = "#619CFF") + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + scale_x_continuous(sec.axis = sec_axis(~. - min(stairUpTraining[stairUp.movelet:(stairUp.movelet+9),]$timeElapsed), name = "Standard Time")) + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "none", plot.title = element_text(size = 7)) + geom_text(aes(x = timeElapsed, y = z, label = round(z,2)), size = 2, vjust = -1) + annotate("text", x = -Inf, y = Inf, label = paste("z discrep:", round(stairUp.z.discrep.min, 3)), hjust = -0.5, vjust = 4, size = 3) + ggtitle("Stair Up Movelet"),
+  
+  nrow = 2)
+
+```
+
+## Training Set
+
+```{r, fig.height=4}
+grid.arrange(
+  ggplot(walkTrainingO) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 9)) + ggtitle("Walking Original"),
+    ggplot(walkTraining) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 9)) + ggtitle("Walking Transformed"),
+  nrow = 1
+)
+
+grid.arrange(
+  ggplot(standTrainingO) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 9)) + ggtitle("Standing Original"),
+    ggplot(standTraining) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 9)) + ggtitle("Standing Transformed"),
+  nrow = 1
+)
+
+grid.arrange(
+  ggplot(stairUpTrainingO) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 9)) + ggtitle("Stair Up Original"),
+    ggplot(stairUpTraining) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 9)) + ggtitle("Stair Up Transformed"),
+  nrow = 1
+)
+
+grid.arrange(
+  ggplot(stairDownTrainingO) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 9)) + ggtitle("Stair Down Original"),
+    ggplot(stairDownTraining) + geom_point(aes(x = timeElapsed, y = x, color = "x"))+ geom_point(aes(x = timeElapsed, y = y, color = "y")) + geom_point(aes(x = timeElapsed, y = z, color = "z")) + geom_line(aes(x = timeElapsed, y = x, color = "x"))+ geom_line(aes(x = timeElapsed, y = y, color = "y")) + geom_line(aes(x = timeElapsed, y = z, color = "z")) + ylab("Acceleration") + ylim(accMin, accMax) + xlab("Time Elapsed") + theme(axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.title.y = element_text(size = 5), legend.position = "bottom", legend.text = element_text(size = 5), legend.title = element_blank(), plot.title = element_text(size = 9)) + ggtitle("Stair Down Transformed"),
+  nrow = 1
+)
+```
+
