@@ -1,0 +1,34 @@
+Function signiture:
+  movelet_Bai2012_singleSensor_modified <- function(data, axes, training, frequency, moveletLength, distOption, trainingActivities, useMag)
+Input Parameters:
+  data: the dataset for analysis (class: data.frame)
+  axes: a dataset consists of all time series fitted into the model (class: data.frame)
+  training: the training dataset, requring it consisting of only the time series and response label (class: data.frame)
+  frequency: data frequency (class: numeric)
+  moveletLength: the length of each movelet (class: numeric)
+  disOption: the method used to calculate the distance between two data points in two time series (class: character, "L2" or "correlation")
+  trainingActivities: a list of all training activities (class: character)
+  useMag: if use magnitude (class: logical)
+Output:
+  A dataset with predictions for data entries
+  
+Part modified:
+  The newMovelet is not extracted from the original dataset but is extracted from the "axes" dataset, so it only consists of the time series data.
+  
+  
+  
+Function signiture:
+  minDiscrep <- function(newMovelet, activity.training, moveletPoints, distOption, useMag)
+Input Parameters:
+  newMovelet: the unlabeled movelet, requiring it consisting of only the time series (class: data.frame)
+  activity.training: the training dataset for one activity, requires it consisting of only the time series and reponse label at the last column (class: data.frame)
+  moveletPoints: the number of points in each movelet, calculated by frequency * moveletLength (class: numeric)
+  distOption: the method used to calculate the distance between two data points in two time series (class: character, "L2" or "correlation")
+  useMag: if use magnitude (class: logical)
+Output:
+  A (1 x numActivities) matrix with minimum discrepancy of each activity for each data entry
+  
+Part modified:
+  Create a new matrix variable discrep.temp (dimension: activity.numMovelets x ncol(newMovelet)) to record the discrepancy between the new movelet and each training movelet on each time series.
+  Use a for-loop to calculate the discrepancy between the new movelet and each training movelet on each time series, discrepancies stored in discrep.temp.
+  The average of each row of the discrep.temp is stored in activity.discrep, which is the discrepancy between the new movelet and each of the training movelet.
