@@ -87,32 +87,6 @@ moveletPoints <- frequency * moveletLength
 ```
 
 ```{r}
-AccTraining5sO <- data.frame(AccData[1,])
-for(j in 1:length(trainingActivities)){
-  AccTraining5sO <- rbind(AccTraining5sO, subset(AccData, label == trainingActivities[j])[1,])
-  for(i in 2:50){
-    if(subset(AccData, label == trainingActivities[j])$timeElapsed[i] - subset(AccData, label == trainingActivities[j])$timeElapsed[i-1] < 0.11){
-      AccTraining5sO <- rbind(AccTraining5sO, subset(AccData, label == trainingActivities[j])[i,])
-    }
-    else{
-      break
-    }
-  }
-}
-AccTraining5sO <- AccTraining5sO[-1,]
-
-AccTraining5sO <- AccTraining5sO[-c(1:50),]
-AccTraining5sO <- rbind(AccTraining5sO, subset(AccData, label == "walk")[c(22:(22+50-1)),])
-```
-
-```{r}
-standTrainingO <- AccTraining5sO[AccTraining5sO$label == "stand",]
-walkTrainingO <- AccTraining5sO[AccTraining5sO$label == "walk",]
-stairUpTrainingO <- AccTraining5sO[AccTraining5sO$label == "stairUp",]
-stairDownTrainingO <- AccTraining5sO[AccTraining5sO$label == "stairDown",]
-```
-
-```{r}
 AccTraining5s <- data.frame(SPOAcc[1,])
 for(j in 1:length(trainingActivities)){
   AccTraining5s <- rbind(AccTraining5s, subset(SPOAcc, label == trainingActivities[j])[1,])
