@@ -45,13 +45,26 @@ one_movelet_analysis_graph <- function(data, axes, movelet_index, training, dist
   
   # plots
   colors <- rainbow(ncol(axes))
+  # The graph for all axes
   par(mar = c(2,4,2,2), mfrow = c(2,3))
   myPlot(data, axes, movelet_index, moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = FALSE, axis = 1, label_axis = FALSE, title = "New Movelet", discrep.value = "")
   for(i in 2:ncol(axes)){
     myPlot(data, axes, movelet_index, moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = TRUE, axis = i, label_axis = FALSE, title = "", discrep.value = "")
   }
   legend("topright", inset = c(-0.6,0), legend = colnames(axes), col = colors, pch = 20, lwd = 2, cex = 0.7, bty = "n", seg.len = 0.2, x.intersp = 0.1, y.intersp = 0.5)
-  for(m in 1:length(trainingActivities)){
+  for(m in 1:2){
+    myPlot(data = subset(training,training$label == trainingActivities[m]), axes = subset(training, training$label == trainingActivities[m]), minDiscrep[m,2], moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = FALSE, axis = 1, label_axis = FALSE, title = trainingActivities[m], discrep.value = paste("Discrepancy: ", round(minDiscrep[m,1], 2)))
+    for(i in 2:ncol(axes)){
+      myPlot(data = subset(training,training$label == trainingActivities[m]), axes = subset(training, training$label == trainingActivities[m]), minDiscrep[m,2], moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = TRUE, axis = i, label_axis = FALSE, title = "", discrep.value = "")
+    }
+    legend("topright", inset = c(-0.6,0), legend = colnames(axes), col = colors, pch = 20, lwd = 2, cex = 0.7, bty = "n", seg.len = 0.2, x.intersp = 0.1, y.intersp = 0.5)
+  }
+  myPlot(data, axes, movelet_index, moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = FALSE, axis = 1, label_axis = FALSE, title = "New Movelet", discrep.value = "")
+  for(i in 2:ncol(axes)){
+    myPlot(data, axes, movelet_index, moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = TRUE, axis = i, label_axis = FALSE, title = "", discrep.value = "")
+  }
+  legend("topright", inset = c(-0.6,0), legend = colnames(axes), col = colors, pch = 20, lwd = 2, cex = 0.7, bty = "n", seg.len = 0.2, x.intersp = 0.1, y.intersp = 0.5)
+  for(m in 3:4){
     myPlot(data = subset(training,training$label == trainingActivities[m]), axes = subset(training, training$label == trainingActivities[m]), minDiscrep[m,2], moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = FALSE, axis = 1, label_axis = FALSE, title = trainingActivities[m], discrep.value = paste("Discrepancy: ", round(minDiscrep[m,1], 2)))
     for(i in 2:ncol(axes)){
       myPlot(data = subset(training,training$label == trainingActivities[m]), axes = subset(training, training$label == trainingActivities[m]), minDiscrep[m,2], moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = TRUE, axis = i, label_axis = FALSE, title = "", discrep.value = "")
@@ -59,11 +72,18 @@ one_movelet_analysis_graph <- function(data, axes, movelet_index, training, dist
     legend("topright", inset = c(-0.6,0), legend = colnames(axes), col = colors, pch = 20, lwd = 2, cex = 0.7, bty = "n", seg.len = 0.2, x.intersp = 0.1, y.intersp = 0.5)
   }
   
+  # The graph for only one axis
   for(n in 1:ncol(axes)){
     par(mfrow = c(2,3))
     myPlot(data, axes, movelet_index, moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = FALSE, axis = i, label_axis = TRUE, title = "New Movelet", discrep.value = "")
     legend("topright", inset = c(-0.6,0), legend = colnames(axes[n]), col = colors[n], pch = 20, lwd = 2, cex = 0.7, bty = "n", seg.len = 0.2, x.intersp = 0.1, y.intersp = 0.5)
-    for(m in 1:length(trainingActivities)){
+    for(m in 1:2){
+      myPlot(data = subset(training,training$label == trainingActivities[m]), axes = subset(training, training$label == trainingActivities[m]), minDiscrep[m,2], moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = FALSE, axis = i, label_axis = TRUE, title = trainingActivities[m], discrep.value = paste("Discrepancy: ", round(minDiscrep[m,n+2], 2)))
+      legend("topright", inset = c(-0.6,0), legend = colnames(axes[n]), col = colors[n], pch = 20, lwd = 2, cex = 0.7, bty = "n", seg.len = 0.2, x.intersp = 0.1, y.intersp = 0.5)
+    }
+    myPlot(data, axes, movelet_index, moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = FALSE, axis = i, label_axis = TRUE, title = "New Movelet", discrep.value = "")
+    legend("topright", inset = c(-0.6,0), legend = colnames(axes[n]), col = colors[n], pch = 20, lwd = 2, cex = 0.7, bty = "n", seg.len = 0.2, x.intersp = 0.1, y.intersp = 0.5)
+    for(m in 3:4){
       myPlot(data = subset(training,training$label == trainingActivities[m]), axes = subset(training, training$label == trainingActivities[m]), minDiscrep[m,2], moveletPoints, acc.max, acc.min, gyro.max, gyro.min, if.new = FALSE, axis = i, label_axis = TRUE, title = trainingActivities[m], discrep.value = paste("Discrepancy: ", round(minDiscrep[m,n+2], 2)))
       legend("topright", inset = c(-0.6,0), legend = colnames(axes[n]), col = colors[n], pch = 20, lwd = 2, cex = 0.7, bty = "n", seg.len = 0.2, x.intersp = 0.1, y.intersp = 0.5)
     }
