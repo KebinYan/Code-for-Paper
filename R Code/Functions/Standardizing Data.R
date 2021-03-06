@@ -1,3 +1,4 @@
+## This is the function for standardizing datasets. By applying the function, all data are recorded at the same timestamps.
 ## Parameters:
 ## data: the dataset to be standardized
 ## timeUnit: the unit of timestamp, either in millisecond ("ms") or second ("second")
