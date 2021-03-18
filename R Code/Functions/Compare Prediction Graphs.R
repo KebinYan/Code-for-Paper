@@ -24,14 +24,19 @@ GyroOnAccTime <- function(accResult, gyroResult, timeDifference){
 
 # create a graph comparing true labels, accelerometer predicitons, gyroscope predcitions, and combined data predictions
 # the logic of the function is the same as "PlotActivityPrediction" function in the movelet method
-combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult, xRange, activityList, activityCols){
+combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult, xRange, activityList, activityCols, legend){
   numActivities <- length(activityList)
   
   if (is.na(xRange[1])){
     xRange <- range(combinedResult$timestamp)
   }
   
-  par(mfrow = c(4,1))
+  if(legend){
+    par(mfrow = c(5,1)) 
+  }
+  else{
+    par(mfrow = c(4,1))
+  }
   par(mar=c(2,1,1,1))
   
   for (i in 1:numActivities){
@@ -80,6 +85,12 @@ combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult
     if (i != numActivities){
       par(new = TRUE)
     }
+  }
+  
+  if(legend)
+  {
+    plot.new()
+    legend("center", legend=activityList, fill=activityCols, cex=0.8, ncol = 4, text.font=2, box.lty=0)
   }
 }
 
