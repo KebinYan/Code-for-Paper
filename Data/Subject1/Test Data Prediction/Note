@@ -1,0 +1,2 @@
+If not specified, the training set contains the middle 5 second of the training data for all activities except chairStand. 
+chairStand1 is used as the training data for chairStand.
