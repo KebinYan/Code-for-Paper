@@ -177,17 +177,22 @@ movelet_Bai2012_singleSensor_modified <- function(data,
   return(data)
 }
 
-plotActivityPrediction <- function(result, xRange, activityList, activityCols){
+plotActivityPrediction <- function(result, xRange, activityList, activityCols, legend){
   numActivities <- length(activityList)
   
   if (is.na(xRange[1])){
-    xRange <- range(result$acc.timeElapsed)
+    xRange <- range(result$timestamp)
   }
   
-  par(mfrow = c(2,1))
+  if(legend){
+    par(mfrow = c(3,1))
+  }
+  else{
+    par(mfrow = c(2,1))
+  }
   
   for (i in 1:numActivities){
-    plot(result$acc.timeElapsed[!is.na(result$label) & result$label == activityList[i]], 
+    plot(result$timestamp[!is.na(result$label) & result$label == activityList[i]], 
          rep(1, sum(result$label == activityList[i], na.rm = TRUE)), 
          col = activityCols[i], xlim = xRange, type = "h", yaxt = 'n',
          xlab = "Time elapsed", ylab = "", ylim = c(0,1),
@@ -199,7 +204,7 @@ plotActivityPrediction <- function(result, xRange, activityList, activityCols){
   }
   
   for (i in 1:numActivities){
-    plot(result$acc.timeElapsed[!is.na(result$label.predict) & result$label.predict == activityList[i]], 
+    plot(result$timestamp[!is.na(result$label.predict) & result$label.predict == activityList[i]], 
          rep(1, sum(result$label.predict == activityList[i], na.rm = TRUE)), 
          col = activityCols[i], xlim = xRange, type = "h", yaxt = 'n',
          xlab = "Time elapsed", ylab = "", ylim = c(0,1),
@@ -208,6 +213,11 @@ plotActivityPrediction <- function(result, xRange, activityList, activityCols){
     if (i != numActivities){
       par(new = TRUE)
     }
+  }
+  
+  if(legend){
+    plot.new()
+    legend("center", legend=activityList, fill=activityCols, cex=0.8, ncol = 4, text.font=2, box.lty=0)
   }
 }
 
