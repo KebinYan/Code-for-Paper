@@ -1,0 +1,29 @@
+There are two files: Data and R codes.
+
+The file "Data/Subject1" contains data for subject 1.
+The file "Data/Subject1/Training" contains training data for subject 1. 
+ - "StandardizedData" contains interpolated data with 0.1s between each 2 data points. The interpolation is based on timeElapsed.
+ - "OriginalDataCombined" contains the combined accelerometer and gyroscope data. The gyroscope data are interpolated with accelerometer's timestamp.
+The file "Data/Subject1/Standardized Test Data" contains interpolated test data with 0.1s between each 2 data points for subject 1. The interpolation is based on timestamp.
+The file "Data/Subject1/Test Data Prediction" contains the prediction results on test data for subject 1.
+ - "Prediction with Original Data" contains prediction results for the original data. Note that in combined training data, the gyroscope data are interpolated with accelerometer's timestamp.
+   - Note there are 4s and 5s training set in step 1 and 2. "4s training set" contains the results for sensitivity analysis of the size of the training set. Those training data are interpolated with timeElapsed.
+   - "acc_gyro_time_difference" in step 1 and 2 are results of calculating the difference between acc and gyro timestamp.
+   - Step 5 and 6 only contains the prediction results with a 5s training set.
+ - "Prediction with Standardized Data" contains prediction results for the standardized data (0.1s between 2 data points). The interpolation for training set is based on timeElapsed.
+
+The file "R codes" contains R templates.
+"Subject1_standardizedData.R" contains R codes to produce standardized training and test data sets included in "Data/Subject1".
+"Subject1_Step1256_front_Prediction_unstandardizedData.R" contains R codes applying movelet method to original data. The prediction results are included in "Data".
+"Subject1_Step1256_front_Prediction_standardizedData.R" contains R codes applying movelet method to standardized data. The prediction results are included in "Data". The training set interpolation is based on timeElapsed.
+"R codes/Functions" contains universial R functions.
+ - "Modified Movelet Method" contains the modified movelet method and a write-up document explaining the function logic.
+ - "Combine Acc and Gyro Data Using Linear Interpolation.R" takes in an accelerometer dataset and a gyroscope dataset, and returns a combined dataset with gyroscope data interpolated on accelerometer timestamp.
+ - "Compare Prediction Graphs.R" contains two functions.
+    - "GyroOnAccTime" returns a subset of gyroscope result on accelerometer's timestamp.
+    - "combinedPlotActivityPrediction" creates a graph comparing true labels, accelerometer predicitons, gyroscope predcitions, and combined data predictions.
+ - "Examining Time Difference.R" contains 2 functions.
+    - "CalculateTimeDifference" calculates the time difference between each gyroscope timestamp and the closest accelerometer timestamp.
+    - "GraphTimeDifference" plots the time difference for all data points.
+ - "One Movelet Analysis Function.R" plots an identified movelet and the training movelets with the closest distance to the identified movelet in each training activity.
+ - "Standardizing Data.R" creates interpolated dataset with 0.1s between each 2 data points.
