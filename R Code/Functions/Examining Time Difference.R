@@ -1,4 +1,4 @@
-# calculate time difference between gyroscope timestamp and the closest accelerometer timestamp
+# calculate the time difference between each gyroscope timestamp and the closest accelerometer timestamp
 CalculateTimeDifference <- function(accData, gyroData){
   time_difference <- as.data.frame(cbind(gyroData$timestamp, rep(NA,nrow(gyroData)), rep(NA,nrow(gyroData))))
   colnames(time_difference) <- c("gyro_timestamp","acc_timestamp","time_difference")
