@@ -27,3 +27,4 @@ The file "R codes" contains R templates.
     - "GraphTimeDifference" plots the time difference for all data points.
  - "One Movelet Analysis Function.R" plots an identified movelet and the training movelets with the closest distance to the identified movelet in each training activity.
  - "Standardizing Data.R" creates interpolated dataset with 0.1s between each 2 data points.
+ - "Plot Confusion Matrix.R" includes a function to create confusion matrix for a result data set.
