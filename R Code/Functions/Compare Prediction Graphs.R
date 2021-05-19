@@ -27,8 +27,16 @@ GyroOnAccTime <- function(accResult, gyroResult, timeDifference){
 combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult, xRange, activityList, activityCols, legend){
   numActivities <- length(activityList)
   
+  accResult$timeElapsed <- (accResult$timestamp - accResult$timestamp[1])/1000
+  gyroResult$timeElapsed <- (gyroResult$timestamp - gyroResult$timestamp[1])/1000
+  combinedResult$timeElapsed <- (combinedResult$timestamp - combinedResult$timestamp[1])/1000
+  
+  accResult <- na.omit(accResult)
+  gyroResult <- na.omit(gyroResult)
+  combinedResult <- na.omit(combinedResult)
+  
   if (is.na(xRange[1])){
-    xRange <- range(combinedResult$timestamp)
+    xRange <- range(combinedResult$timeElapsed[!is.na(combinedResult$label)])
   }
   
   if(legend){
@@ -37,60 +45,63 @@ combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult
   else{
     par(mfrow = c(4,1))
   }
-  par(mar=c(2,1,1,1))
+  par(mar=c(2,1,2,1))
   
   for (i in 1:numActivities){
-    plot(combinedResult$timestamp[!is.na(combinedResult$label) & combinedResult$label == activityList[i]], 
+    plot(combinedResult$timeElapsed[!is.na(combinedResult$label) & combinedResult$label == activityList[i]], 
          rep(1, sum(combinedResult$label == activityList[i], na.rm = TRUE)), 
          col = activityCols[i], xlim = xRange, type = "h", yaxt = 'n',
-         xlab = "Time elapsed", ylab = "", ylim = c(0,1),
+         xlab = "", ylab = "", ylim = c(0,1),
          main = "Truth",
-         cex.lab=1, cex.axis=1, cex.main=1, cex.sub=1)  
+         cex.lab=1, cex.axis=1.2, cex.main=1.5, cex.sub=2)  
     if (i != numActivities){
       par(new = TRUE)
     }
   }
   
+  
   for (i in 1:numActivities){
-    plot(accResult$timestamp[!is.na(accResult$label.predict) & accResult$label.predict == activityList[i]], 
+    plot(accResult$timeElapsed[!is.na(accResult$label.predict) & accResult$label.predict == activityList[i]], 
          rep(1, sum(accResult$label.predict == activityList[i], na.rm = TRUE)), 
          col = activityCols[i], xlim = xRange, type = "h", yaxt = 'n',
-         xlab = "Time elapsed", ylab = "", ylim = c(0,1),
+         xlab = "", ylab = "", ylim = c(0,1),
          main = "Accelerometer Prediction",
-         cex.lab=1, cex.axis=1, cex.main=1, cex.sub=1)
+         cex.lab=1, cex.axis=1.2, cex.main=1.5, cex.sub=1)
     if (i != numActivities){
       par(new = TRUE)
     }
   }
   
   for (i in 1:numActivities){
-    plot(gyroResult$timestamp[!is.na(gyroResult$label.predict) & gyroResult$label.predict == activityList[i]], 
+    plot(gyroResult$timeElapsed[!is.na(gyroResult$label.predict) & gyroResult$label.predict == activityList[i]], 
          rep(1, sum(gyroResult$label.predict == activityList[i], na.rm = TRUE)), 
          col = activityCols[i], xlim = xRange, type = "h", yaxt = 'n',
-         xlab = "Time elapsed", ylab = "", ylim = c(0,1),
+         xlab = "", ylab = "", ylim = c(0,1),
          main = " Gyroscope Prediction",
-         cex.lab=1, cex.axis=1, cex.main=1, cex.sub=1)
+         cex.lab=1, cex.axis=1.2, cex.main=1.5, cex.sub=1)
     if (i != numActivities){
       par(new = TRUE)
     }
   }
   
   for (i in 1:numActivities){
-    plot(combinedResult$timestamp[!is.na(combinedResult$label.predict) & combinedResult$label.predict == activityList[i]], 
+    plot(combinedResult$timeElapsed[!is.na(combinedResult$label.predict) & combinedResult$label.predict == activityList[i]], 
          rep(1, sum(combinedResult$label.predict == activityList[i], na.rm = TRUE)), 
          col = activityCols[i], xlim = xRange, type = "h", yaxt = 'n',
-         xlab = "Time elapsed", ylab = "", ylim = c(0,1),
+         xlab = "", ylab = "", ylim = c(0,1),
          main = "Combined Prediction",
-         cex.lab=1, cex.axis=1, cex.main=1, cex.sub=1)
+         cex.lab=1, cex.axis=1.2, cex.main=1.5, cex.sub=1)
     if (i != numActivities){
       par(new = TRUE)
     }
   }
+  mtext("Time Elapsed", side = 1, line = 2)
   
   if(legend)
   {
+    par(mar=c(2,1,1,1))
     plot.new()
-    legend("center", legend=activityList, fill=activityCols, cex=0.8, ncol = 4, text.font=2, box.lty=0)
+    legend("center", legend=activityList, fill=activityCols, cex=1.5, ncol = 4, text.font=1, box.lty=0)
   }
 }
 
