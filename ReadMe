@@ -1,4 +1,6 @@
-There are two files: Data and R codes.
+Files Explanation:
+
+subject1 contains all data and functions specifically for subject 1.
 
 The file "Data/Subject1" contains data for subject 1.
 The file "Data/Subject1/Training" contains training data for subject 1. 
