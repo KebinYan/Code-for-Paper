@@ -1,22 +1,6 @@
-There are two files: Data and R codes.
+Files Explanation:
 
-The file "Data/Subject1" contains data for subject 1.
-The file "Data/Subject1/Training" contains training data for subject 1. 
- - "StandardizedData" contains interpolated data with 0.1s between each 2 data points. The interpolation is based on timeElapsed.
- - "OriginalDataCombined" contains the combined accelerometer and gyroscope data. The gyroscope data are interpolated with accelerometer's timestamp.
-The file "Data/Subject1/Standardized Test Data" contains interpolated test data with 0.1s between each 2 data points for subject 1. The interpolation is based on timestamp.
-The file "Data/Subject1/Test Data Prediction" contains the prediction results on test data for subject 1.
- - "Prediction with Original Data" contains prediction results for the original data. Note that in combined training data, the gyroscope data are interpolated with accelerometer's timestamp.
-   - Note there are 4s and 5s training set in step 1 and 2. "4s training set" contains the results for sensitivity analysis of the size of the training set. Those training data are interpolated with timeElapsed.
-   - "acc_gyro_time_difference" in step 1 and 2 are results of calculating the difference between acc and gyro timestamp.
-   - Step 5 and 6 only contains the prediction results with a 5s training set.
- - "Prediction with Standardized Data" contains prediction results for the standardized data (0.1s between 2 data points). The interpolation for training set is based on timeElapsed.
-
-The file "R codes" contains R templates.
-"Subject1_standardizedData.R" contains R codes to produce standardized training and test data sets included in "Data/Subject1".
-"Subject1_Step1256_front_Prediction_unstandardizedData.R" contains R codes applying movelet method to original data. The prediction results are included in "Data".
-"Subject1_Step1256_front_Prediction_standardizedData.R" contains R codes applying movelet method to standardized data. The prediction results are included in "Data". The training set interpolation is based on timeElapsed.
-"R codes/Functions" contains universial R functions.
+“Universal R Functions” contain all universal R codes.
  - "Modified Movelet Method" contains the modified movelet method and a write-up document explaining the function logic.
  - "Combine Acc and Gyro Data Using Linear Interpolation.R" takes in an accelerometer dataset and a gyroscope dataset, and returns a combined dataset with gyroscope data interpolated on accelerometer timestamp.
  - "Compare Prediction Graphs.R" contains two functions.
@@ -28,3 +12,30 @@ The file "R codes" contains R templates.
  - "One Movelet Analysis Function.R" plots an identified movelet and the training movelets with the closest distance to the identified movelet in each training activity.
  - "Standardizing Data.R" creates interpolated dataset with 0.1s between each 2 data points.
  - "Plot Confusion Matrix.R" includes a function to create confusion matrix for a result data set.
+
+"subject1" contains all data and functions specifically for subject 1.
+  - R scripts: 
+    - "Subject1_standardizing Data.R" contains R codes to produce standardized training and test data sets for subject 1.
+    - "Subject1_Step12356_Front_Prediction_unstandardizedData.R" contains R codes applying movelet method to original data for steps 1,2,3,5, and 6.
+    - "Subject1_Step1256_front_pred_standardizedData.R" contains R codes applying movelet method to standardized data for steps 1,2,5, and 6.
+  - Results:
+    - "Confusion Matrices" contains confusion matrices for steps 1, 2, 3, 5, 6, and all steps with accelerometer-only, gyroscope-only, and combined data, as well as the R codes to produce these confusion matrices.
+    - "Prediction Datasets" contains datasets returned by modified movelet method.
+      - "Prediction with Original Data" contains predicted datasets for steps 1, 2, 3, 5, and 6 with accelerometer-only, gyroscope-only, and combined original data.
+      - "Prediction with Standardized Data" contains predicted datasets for steps 1, 2, 5, and 6 with accelerometer-only, gyroscope-only, and combined standardized data.
+    - "Comparison Graphs" conatins comparison graphs for steps 1, 2, 3, 5, and 6, as well as the R codes to produce these comparsion graphs.
+  - Test Data:
+    - contains original test data for steps 1, 2, 3, 5, and 6. 
+    - "Standardized Test Data" contains standardized test data for steps 1, 2, 5, and 6 in which each 2 data points are 0.1s apart.
+  - Training Data:
+    - "Original Data Combined" contains the combined training data on accelerometer timestamps.
+    - "Standardized Data" contains standardized training data for all training activities in which each 2 data points are 0.1s apart.
+  
+"subject2", "subject3", and "subject4" have the same format.
+  - R scripts: contain R codes applying modified movelet method to each subject's data.
+  - Results: 
+    - "Confusion Matrices" contains confusion matrices for steps 1, 2, 3, 5, 6, and all steps with accelerometer-only, gyroscope-only, and combined data, as well as the R codes to produce these confusion matrices.
+    - "Prediction Datasets" contains datasets for steps 1, 2, 3, 5, and 6 returned by modified movelet method.
+    - "Comparison Graphs" conatins comparison graphs for steps 1, 2, 3, 5, and 6, as well as the R codes to produce these comparsion graphs.
+  - Test Data: contains test data for steps 1, 2, 3, 5, and 6. 
+  - Training Data: contains the combined training data on accelerometer timestamps.
