@@ -39,3 +39,5 @@ Files Explanation:
     - "Comparison Graphs" conatins comparison graphs for steps 1, 2, 3, 5, and 6, as well as the R codes to produce these comparsion graphs.
   - Test Data: contains test data for steps 1, 2, 3, 5, and 6. 
   - Training Data: contains the combined training data on accelerometer timestamps.
+
+** Note: All standardized data were using the modified training data with timeElpased instead of timestamp.
