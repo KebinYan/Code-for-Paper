@@ -1,4 +1,4 @@
-# This is the code file how all standardized datasets were created. This code file used "Standarding Data.R" function in the function file.
+# This is the code file how all standardized datasets were created. This code file used "Standardizng Data.R" function in the function file.
 
 source("~/Desktop/WFU/URECA/R_template/Standardizing Data.R")
 
