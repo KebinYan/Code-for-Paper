@@ -336,10 +336,25 @@ write.csv(combined_result_step1, "~/Desktop/csv/subject1/test/Prediction/Step1/f
 combined_result_step2 <- movelet_Bai2012_singleSensor_modified(test_front_step2, axes_step2, training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(combined_result_step2, "~/Desktop/csv/subject1/test/Prediction/Step2/front_pred.csv")
 combined_result_step3_fastWalk <- movelet_Bai2012_singleSensor_modified(test_front_step3_fastWalk, axes_step3_fastWalk, training, frequency, moveletLength, distOption, trainingActivities, useMag)
+for(i in 1:nrow(combined_result_step3_fastWalk)){
+  if(combined_result_step3_fastWalk$label[i] == "fast"){
+    combined_result_step3_fastWalk$label[i] = "walk"
+  }
+}
 write.csv(combined_result_step3_fastWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/fast_walk/front_pred_fast.csv")
 combined_result_step3_normalWalk <- movelet_Bai2012_singleSensor_modified(test_front_step3_normalWalk, axes_step3_normalWalk, training, frequency, moveletLength, distOption, trainingActivities, useMag)
+for(i in 1:nrow(combined_result_step3_normalWalk)){
+  if(combined_result_step3_normalWalk$label[i] == "normal"){
+    combined_result_step3_normalWalk$label[i] = "walk"
+  }
+}
 write.csv(combined_result_step3_normalWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/normal_walk/front_pred_normal.csv")
 combined_result_step3_slowWalk <- movelet_Bai2012_singleSensor_modified(test_front_step3_slowWalk, axes_step3_slowWalk, training, frequency, moveletLength, distOption, trainingActivities, useMag)
+for(i in 1:nrow(combined_result_step3_slowWalk)){
+  if(combined_result_step3_slowWalk$label[i] == "slow"){
+    combined_result_step3_slowWalk$label[i] = "walk"
+  }
+}
 write.csv(combined_result_step3_slowWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/slow_walk/front_pred_slow.csv")
 combined_result_step5 <- movelet_Bai2012_singleSensor_modified(test_front_step5, axes_step5, training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(combined_result_step5, "~/Desktop/csv/subject1/test/Prediction/Step5/front_pred.csv")
@@ -353,10 +368,25 @@ write.csv(acc_result_step1, "~/Desktop/csv/subject1/test/Prediction/Step1/acc_fr
 acc_result_step2 <- movelet_Bai2012_singleSensor_modified(test_acc_front_step2, acc_axes_step2, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(acc_result_step2, "~/Desktop/csv/subject1/test/Prediction/Step2/acc_front_pred.csv")
 acc_result_step3_fastWalk <- movelet_Bai2012_singleSensor_modified(test_acc_front_step3_fastWalk, acc_axes_step3_fastWalk, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
+for(i in 1:nrow(acc_result_step3_fastWalk)){
+  if(acc_result_step3_fastWalk$label[i] == "fast"){
+    acc_result_step3_fastWalk$label[i] = "walk"
+  }
+}
 write.csv(acc_result_step3_fastWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/fast_walk/acc_front_pred_fast.csv")
 acc_result_step3_normalWalk <- movelet_Bai2012_singleSensor_modified(test_acc_front_step3_normalWalk, acc_axes_step3_normalWalk, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
+for(i in 1:nrow(acc_result_step3_normalWalk)){
+  if(acc_result_step3_normalWalk$label[i] == "normal"){
+    acc_result_step3_normalWalk$label[i] = "walk"
+  }
+}
 write.csv(acc_result_step3_normalWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/normal_walk/acc_front_pred_normal.csv")
 acc_result_step3_slowWalk <- movelet_Bai2012_singleSensor_modified(test_acc_front_step3_slowWalk, acc_axes_step3_slowWalk, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
+for(i in 1:nrow(acc_result_step3_slowWalk)){
+  if(acc_result_step3_slowWalk$label[i] == "slow"){
+    acc_result_step3_slowWalk$label[i] = "walk"
+  }
+}
 write.csv(acc_result_step3_slowWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/slow_walk/acc_front_pred_slow.csv")
 acc_result_step5 <- movelet_Bai2012_singleSensor_modified(test_acc_front_step5, acc_axes_step5, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(acc_result_step5, "~/Desktop/csv/subject1/test/Prediction/Step5/acc_front_pred.csv")
@@ -370,10 +400,25 @@ write.csv(gyro_result_step1, "~/Desktop/csv/subject1/test/Prediction/Step1/gyro_
 gyro_result_step2 <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step2, gyro_axes_step2, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(gyro_result_step2, "~/Desktop/csv/subject1/test/Prediction/Step2/gyro_front_pred.csv")
 gyro_result_step3_fastWalk <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step3_fastWalk, gyro_axes_step3_fastWalk, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
+for(i in 1:nrow(gyro_result_step3_fastWalk)){
+  if(gyro_result_step3_fastWalk$label[i] == "fast"){
+    gyro_result_step3_fastWalk$label[i] = "walk"
+  }
+}
 write.csv(gyro_result_step3_fastWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/fast_walk/gyro_front_pred_fast.csv")
 gyro_result_step3_normalWalk <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step3_normalWalk, gyro_axes_step3_normalWalk, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
+for(i in 1:nrow(gyro_result_step3_normalWalk)){
+  if(gyro_result_step3_normalWalk$label[i] == "normal"){
+    gyro_result_step3_normalWalk$label[i] = "walk"
+  }
+}
 write.csv(gyro_result_step3_normalWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/normal_walk/gyro_front_pred_normal.csv")
 gyro_result_step3_slowWalk <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step3_slowWalk, gyro_axes_step3_slowWalk, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
+for(i in 1:nrow(gyro_result_step3_slowWalk)){
+  if(gyro_result_step3_slowWalk$label[i] == "slow"){
+    gyro_result_step3_slowWalk$label[i] = "walk"
+  }
+}
 write.csv(gyro_result_step3_slowWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/slow_walk/gyro_front_pred_slow.csv")
 gyro_result_step5 <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step5, gyro_axes_step5, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(gyro_result_step5, "~/Desktop/csv/subject1/test/Prediction/Step5/gyro_front_pred.csv")
@@ -397,23 +442,8 @@ xRange <- NA
 ##predicted labels on the bottom
 plotActivityPrediction(combined_result_step1, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(combined_result_step2, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(combined_result_step3_fastWalk)){
-  if(combined_result_step3_fastWalk$label[i] == "fast"){
-    combined_result_step3_fastWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(combined_result_step3_fastWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(combined_result_step3_normalWalk)){
-  if(combined_result_step3_normalWalk$label[i] == "normal"){
-    combined_result_step3_normalWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(combined_result_step3_normalWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(combined_result_step3_slowWalk)){
-  if(combined_result_step3_slowWalk$label[i] == "slow"){
-    combined_result_step3_slowWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(combined_result_step3_slowWalk, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(combined_result_step5, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(combined_result_step6_stairUp, xRange, activityList, activityCols, TRUE)
@@ -421,23 +451,8 @@ plotActivityPrediction(combined_result_step6_stairDown, xRange, activityList, ac
 
 plotActivityPrediction(acc_result_step1, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(acc_result_step2, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(acc_result_step3_fastWalk)){
-  if(acc_result_step3_fastWalk$label[i] == "fast"){
-    acc_result_step3_fastWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(acc_result_step3_fastWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(acc_result_step3_normalWalk)){
-  if(acc_result_step3_normalWalk$label[i] == "normal"){
-    acc_result_step3_normalWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(acc_result_step3_normalWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(acc_result_step3_slowWalk)){
-  if(acc_result_step3_slowWalk$label[i] == "slow"){
-    acc_result_step3_slowWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(acc_result_step3_slowWalk, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(acc_result_step5, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(acc_result_step6_stairDown, xRange, activityList, activityCols, TRUE)
@@ -445,23 +460,8 @@ plotActivityPrediction(acc_result_step6_stairUp, xRange, activityList, activityC
 
 plotActivityPrediction(gyro_result_step1, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(gyro_result_step2, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(gyro_result_step3_fastWalk)){
-  if(gyro_result_step3_fastWalk$label[i] == "fast"){
-    gyro_result_step3_fastWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(gyro_result_step3_fastWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(gyro_result_step3_normalWalk)){
-  if(gyro_result_step3_normalWalk$label[i] == "normal"){
-    gyro_result_step3_normalWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(gyro_result_step3_normalWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(gyro_result_step3_slowWalk)){
-  if(gyro_result_step3_slowWalk$label[i] == "slow"){
-    gyro_result_step3_slowWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(gyro_result_step3_slowWalk, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(gyro_result_step5, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(gyro_result_step6_stairDown, xRange, activityList, activityCols, TRUE)
