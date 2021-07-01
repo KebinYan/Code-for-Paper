@@ -1,4 +1,8 @@
 library(data.table)
+library(gridExtra)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
 source("~/Desktop/WFU/URECA/R_template/six axes/Modified Movelet Method.R")
 source("~/Desktop/WFU/URECA/R_template/Combine Acc and Gyro Data Using Linear Interpolation.R")
 
@@ -25,8 +29,23 @@ acc_trainStairUp<- subset(acc_front_stairUp, acc_front_stairUp$timestamp > (acc_
 acc_stairDownTime <- setDT(acc_front_stairDown)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
 acc_trainStairDown <- subset(acc_front_stairDown, acc_front_stairDown$timestamp > (acc_stairDownTime - trainingSec/2) & acc_front_stairDown$timestamp < (acc_stairDownTime + trainingSec/2))
 
+acc_trainWalk$timeElapsed <- (acc_trainWalk$timestamp - acc_trainWalk$timestamp[1])/1000
+acc_trainStand$timeElapsed <- (acc_trainStand$timestamp - acc_trainStand$timestamp[1])/1000
+acc_trainStairUp$timeElapsed <- (acc_trainStairUp$timestamp - acc_trainStairUp$timestamp[1])/1000
+acc_trainStairDown$timeElapsed <- (acc_trainStairDown$timestamp - acc_trainStairDown$timestamp[1])/1000
+
+acc_front_sit <- subset(acc_front_chairStand1, label == "sit1")
+acc_sitTime <- setDT(acc_front_sit)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
+acc_trainSit <- subset(acc_front_sit, acc_front_sit$timestamp > (acc_sitTime - trainingSec/2) & acc_front_sit$timestamp < (acc_sitTime + trainingSec/2))
+acc_trainSit$timeElapsed <- (acc_trainSit$timestamp - acc_trainSit$timestamp[1])/1000
+
+acc_front_sitToStand <- subset(acc_front_chairStand1, label == "sitToStand1")
+acc_front_sitToStand$timeElapsed <- (acc_front_sitToStand$timestamp - acc_front_sitToStand$timestamp[1])/1000
+acc_front_standToSit <- subset(acc_front_chairStand1, label == "standToSit1")
+acc_front_standToSit$timeElapsed <- (acc_front_standToSit$timestamp - acc_front_standToSit$timestamp[1])/1000
+
 # create a training set with all activities
-acc_trainingSet <- rbind.data.frame(acc_trainWalk, acc_trainStand, acc_trainStairUp, acc_trainStairDown, acc_front_chairStand1)
+acc_trainingSet <- rbind.data.frame(acc_trainWalk, acc_trainStand, acc_trainStairUp, acc_trainStairDown, acc_trainSit, acc_front_sitToStand, acc_front_standToSit)
 
 # change the label in training set to the same notations as in the test set
 for(i in 1:nrow(acc_trainingSet)){
@@ -38,6 +57,27 @@ for(i in 1:nrow(acc_trainingSet)){
 # create a training dataset with the 3 axes and the label column
 acc_training <- cbind.data.frame(acc_trainingSet$x, acc_trainingSet$y, acc_trainingSet$z, acc_trainingSet$label)
 names(acc_training) <- c("acc.x", "acc.y", "acc.z", "label")
+
+# plot training data
+cols <- c("x" = "#000000", "y" = "#56B4E9", "z" = "#E69F00")
+accMin <- min(acc_trainingSet$x, acc_trainingSet$y, acc_trainingSet$z)
+accMax <- max(acc_trainingSet$x, acc_trainingSet$y, acc_trainingSet$z)
+
+acc_train_plot <- gather(acc_trainingSet, key = "axes", value = "acceleration", x, y, z)
+
+pdf(file = "~/Desktop/subject1_acc_training.pdf", paper = "USr", width = 35)
+grid.arrange(
+  ggplot(subset(acc_train_plot, label == "walk"), aes(x =  timeElapsed, y = acceleration, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Acceleration (g)") + ylim(accMin, accMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Walk"),
+  ggplot(subset(acc_train_plot, label == "stand"), aes(x =  timeElapsed, y = acceleration, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Acceleration (g)") + ylim(accMin, accMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Stand"),
+  ggplot(subset(acc_train_plot, label == "stairUp"), aes(x =  timeElapsed, y = acceleration, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Acceleration (g)") + ylim(accMin, accMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Stair Up"),
+  ggplot(subset(acc_train_plot, label == "stairDown"), aes(x =  timeElapsed, y = acceleration, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Acceleration (g)") + ylim(accMin, accMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Stair Down"),
+  ggplot(subset(acc_train_plot, label == "sit"), aes(x =  timeElapsed, y = acceleration, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Acceleration (g)") + ylim(accMin, accMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Sit"),
+  ggplot(subset(acc_train_plot, label == "sitToStand"), aes(x =  timeElapsed, y = acceleration, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Acceleration (g)") + ylim(accMin, accMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Sit to Stand"),
+  ggplot(subset(acc_train_plot, label == "standToSit"), aes(x =  timeElapsed, y = acceleration, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Acceleration (g)") + ylim(accMin, accMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Stand to Sit"),
+  ggplot(acc_train_plot, aes(x =  timeElapsed, y = acceleration, color = axes)) + theme_void() + geom_point(cex = 0.5, alpha = 0) + geom_line(alpha = 0) + scale_color_manual(values = cols) + guides(color = guide_legend(override.aes = list(alpha=1))) +  theme(legend.position = "left", legend.text = element_text(size = 14), legend.title =element_blank()),
+  nrow = 2
+)
+dev.off()
 
 # test
 # load data
@@ -88,8 +128,23 @@ gyro_trainStairUp<- subset(gyro_front_stairUp, gyro_front_stairUp$timestamp > (g
 gyro_stairDownTime <- setDT(gyro_front_stairDown)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
 gyro_trainStairDown <- subset(gyro_front_stairDown, gyro_front_stairDown$timestamp > (gyro_stairDownTime - trainingSec/2) & gyro_front_stairDown$timestamp < (gyro_stairDownTime + trainingSec/2))
 
+gyro_trainWalk$timeElapsed <- (gyro_trainWalk$timestamp - gyro_trainWalk$timestamp[1])/1000
+gyro_trainStand$timeElapsed <- (gyro_trainStand$timestamp - gyro_trainStand$timestamp[1])/1000
+gyro_trainStairUp$timeElapsed <- (gyro_trainStairUp$timestamp - gyro_trainStairUp$timestamp[1])/1000
+gyro_trainStairDown$timeElapsed <- (gyro_trainStairDown$timestamp - gyro_trainStairDown$timestamp[1])/1000
+
+gyro_front_sit <- subset(gyro_front_chairStand1, label == "sit1")
+gyro_sitTime <- setDT(gyro_front_sit)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
+gyro_trainSit <- subset(gyro_front_sit, gyro_front_sit$timestamp > (gyro_sitTime - trainingSec/2) & gyro_front_sit$timestamp < (gyro_sitTime + trainingSec/2))
+gyro_trainSit$timeElapsed <- (gyro_trainSit$timestamp - gyro_trainSit$timestamp[1])/1000
+
+gyro_front_sitToStand <- subset(gyro_front_chairStand1, label == "sitToStand1")
+gyro_front_sitToStand$timeElapsed <- (gyro_front_sitToStand$timestamp - gyro_front_sitToStand$timestamp[1])/1000
+gyro_front_standToSit <- subset(gyro_front_chairStand1, label == "standToSit1")
+gyro_front_standToSit$timeElapsed <- (gyro_front_standToSit$timestamp - gyro_front_standToSit$timestamp[1])/1000
+
 # create a training set with all activities
-gyro_trainingSet <- rbind.data.frame(gyro_trainWalk, gyro_trainStand, gyro_trainStairUp, gyro_trainStairDown, gyro_front_chairStand1)
+gyro_trainingSet <- rbind.data.frame(gyro_trainWalk, gyro_trainStand, gyro_trainStairUp, gyro_trainStairDown, gyro_trainSit, gyro_front_sitToStand, gyro_front_standToSit)
 
 # change the label in training set to the same notations as in the test set
 for(i in 1:nrow(gyro_trainingSet)){
@@ -101,6 +156,27 @@ for(i in 1:nrow(gyro_trainingSet)){
 # create a training dataset with the 3 axes and the label column
 gyro_training <- cbind.data.frame(gyro_trainingSet$x, gyro_trainingSet$y, gyro_trainingSet$z, gyro_trainingSet$label)
 names(gyro_training) <- c("gyro.x", "gyro.y", "gyro.z", "label")
+
+# plot training data
+cols <- c("x" = "#000000", "y" = "#56B4E9", "z" = "#E69F00")
+gyroMin <- min(gyro_trainingSet$x, gyro_trainingSet$y, gyro_trainingSet$z)
+gyroMax <- max(gyro_trainingSet$x, gyro_trainingSet$y, gyro_trainingSet$z)
+
+gyro_train_plot <- gather(gyro_trainingSet, key = "axes", value = "rotation", x, y, z)
+
+pdf(file = "~/Desktop/subject1_gyro_training.pdf", paper = "USr", width = 35)
+grid.arrange(
+  ggplot(subset(gyro_train_plot, label == "walk"), aes(x =  timeElapsed, y = rotation, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Angular Velocity (rad/sec)") + ylim(gyroMin, gyroMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Walk"),
+  ggplot(subset(gyro_train_plot, label == "stand"), aes(x =  timeElapsed, y = rotation, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Angular Velocity (rad/sec)") + ylim(gyroMin, gyroMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Stand"),
+  ggplot(subset(gyro_train_plot, label == "stairUp"), aes(x =  timeElapsed, y = rotation, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Angular Velocity (rad/sec)") + ylim(gyroMin, gyroMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Stair Up"),
+  ggplot(subset(gyro_train_plot, label == "stairDown"), aes(x =  timeElapsed, y = rotation, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Angular Velocity (rad/sec)") + ylim(gyroMin, gyroMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Stair Down"),
+  ggplot(subset(gyro_train_plot, label == "sit"), aes(x =  timeElapsed, y = rotation, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Angular Velocity (rad/sec)") + ylim(gyroMin, gyroMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Sit"),
+  ggplot(subset(gyro_train_plot, label == "sitToStand"), aes(x =  timeElapsed, y = rotation, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Angular Velocity (rad/sec)") + ylim(gyroMin, gyroMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Sit to Stand"),
+  ggplot(subset(gyro_train_plot, label == "standToSit"), aes(x =  timeElapsed, y = rotation, color = axes)) + geom_point(cex = 0.5) + geom_line() + scale_color_manual(values = cols) + ylab("Angular Velocity (rad/sec)") + ylim(gyroMin, gyroMax) + xlab("Time Elapsed (sec)") +  theme(axis.text.x = element_text(size = 9), axis.title.x = element_text(size = 9), axis.title.y = element_text(size = 9), legend.position = "none") + ggtitle("Stand to Sit"),
+  ggplot(gyro_train_plot, aes(x =  timeElapsed, y = rotation, color = axes)) + theme_void() + geom_point(cex = 0.5, alpha = 0) + geom_line(alpha = 0) + scale_color_manual(values = cols) + guides(color = guide_legend(override.aes = list(alpha=1))) +  theme(legend.position = "left", legend.text = element_text(size = 14), legend.title =element_blank()),
+  nrow = 2
+)
+dev.off()
 
 # test
 # load data
@@ -164,8 +240,15 @@ trainStairUp<- subset(stairUp_front, stairUp_front$timestamp > (stairUpTime - tr
 stairDownTime <- setDT(stairDown_front)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
 trainStairDown <- subset(stairDown_front, stairDown_front$timestamp > (stairDownTime - trainingSec/2) & stairDown_front$timestamp < (stairDownTime + trainingSec/2))
 
+front_sit <- subset(chairStand1_front, label == "sit1")
+sitTime <- setDT(front_sit)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
+trainSit <- subset(front_sit, front_sit$timestamp > (sitTime - trainingSec/2) & front_sit$timestamp < (sitTime + trainingSec/2))
+
+front_sitToStand <- subset(chairStand1_front, label == "sitToStand1")
+front_standToSit <- subset(chairStand1_front, label == "standToSit1")
+
 # create a training set with all activities
-trainingSet <- rbind.data.frame(trainWalk, trainStand, trainStairUp, trainStairDown, chairStand1_front)
+trainingSet <- rbind.data.frame(trainWalk, trainStand, trainStairUp, trainStairDown, front_sit, front_sitToStand, front_standToSit)
 
 # change the label in training set to the same notations as in the test set
 for(i in 1:nrow(trainingSet)){
@@ -253,11 +336,11 @@ write.csv(combined_result_step1, "~/Desktop/csv/subject1/test/Prediction/Step1/f
 combined_result_step2 <- movelet_Bai2012_singleSensor_modified(test_front_step2, axes_step2, training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(combined_result_step2, "~/Desktop/csv/subject1/test/Prediction/Step2/front_pred.csv")
 combined_result_step3_fastWalk <- movelet_Bai2012_singleSensor_modified(test_front_step3_fastWalk, axes_step3_fastWalk, training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(combined_result_step3_fastWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/front_pred_fast.csv")
+write.csv(combined_result_step3_fastWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/fast_walk/front_pred_fast.csv")
 combined_result_step3_normalWalk <- movelet_Bai2012_singleSensor_modified(test_front_step3_normalWalk, axes_step3_normalWalk, training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(combined_result_step3_normalWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/front_pred_normal.csv")
+write.csv(combined_result_step3_normalWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/normal_walk/front_pred_normal.csv")
 combined_result_step3_slowWalk <- movelet_Bai2012_singleSensor_modified(test_front_step3_slowWalk, axes_step3_slowWalk, training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(combined_result_step3_slowWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/front_pred_slow.csv")
+write.csv(combined_result_step3_slowWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/slow_walk/front_pred_slow.csv")
 combined_result_step5 <- movelet_Bai2012_singleSensor_modified(test_front_step5, axes_step5, training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(combined_result_step5, "~/Desktop/csv/subject1/test/Prediction/Step5/front_pred.csv")
 combined_result_step6_stairUp <- movelet_Bai2012_singleSensor_modified(test_front_step6_stairUp, axes_step6_stairUp, training, frequency, moveletLength, distOption, trainingActivities, useMag)
@@ -270,11 +353,11 @@ write.csv(acc_result_step1, "~/Desktop/csv/subject1/test/Prediction/Step1/acc_fr
 acc_result_step2 <- movelet_Bai2012_singleSensor_modified(test_acc_front_step2, acc_axes_step2, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(acc_result_step2, "~/Desktop/csv/subject1/test/Prediction/Step2/acc_front_pred.csv")
 acc_result_step3_fastWalk <- movelet_Bai2012_singleSensor_modified(test_acc_front_step3_fastWalk, acc_axes_step3_fastWalk, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(acc_result_step3_fastWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/acc_front_pred_fast.csv")
+write.csv(acc_result_step3_fastWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/fast_walk/acc_front_pred_fast.csv")
 acc_result_step3_normalWalk <- movelet_Bai2012_singleSensor_modified(test_acc_front_step3_normalWalk, acc_axes_step3_normalWalk, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(acc_result_step3_normalWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/acc_front_pred_normal.csv")
+write.csv(acc_result_step3_normalWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/normal_walk/acc_front_pred_normal.csv")
 acc_result_step3_slowWalk <- movelet_Bai2012_singleSensor_modified(test_acc_front_step3_slowWalk, acc_axes_step3_slowWalk, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(acc_result_step3_slowWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/acc_front_pred_slow.csv")
+write.csv(acc_result_step3_slowWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/slow_walk/acc_front_pred_slow.csv")
 acc_result_step5 <- movelet_Bai2012_singleSensor_modified(test_acc_front_step5, acc_axes_step5, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(acc_result_step5, "~/Desktop/csv/subject1/test/Prediction/Step5/acc_front_pred.csv")
 acc_result_step6_stairDown <- movelet_Bai2012_singleSensor_modified(test_acc_front_step6_stairDown, acc_axes_step6_stairDown, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
@@ -287,11 +370,11 @@ write.csv(gyro_result_step1, "~/Desktop/csv/subject1/test/Prediction/Step1/gyro_
 gyro_result_step2 <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step2, gyro_axes_step2, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(gyro_result_step2, "~/Desktop/csv/subject1/test/Prediction/Step2/gyro_front_pred.csv")
 gyro_result_step3_fastWalk <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step3_fastWalk, gyro_axes_step3_fastWalk, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(gyro_result_step3_fastWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/gyro_front_pred_fast.csv")
+write.csv(gyro_result_step3_fastWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/fast_walk/gyro_front_pred_fast.csv")
 gyro_result_step3_normalWalk <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step3_normalWalk, gyro_axes_step3_normalWalk, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(gyro_result_step3_normalWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/gyro_front_pred_normal.csv")
+write.csv(gyro_result_step3_normalWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/normal_walk/gyro_front_pred_normal.csv")
 gyro_result_step3_slowWalk <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step3_slowWalk, gyro_axes_step3_slowWalk, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(gyro_result_step3_slowWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/gyro_front_pred_slow.csv")
+write.csv(gyro_result_step3_slowWalk, "~/Desktop/csv/subject1/test/Prediction/Step3/slow_walk/gyro_front_pred_slow.csv")
 gyro_result_step5 <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step5, gyro_axes_step5, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(gyro_result_step5, "~/Desktop/csv/subject1/test/Prediction/Step5/gyro_front_pred.csv")
 gyro_result_step6_stairDown <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step6_stairDown, gyro_axes_step6_stairDown, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)

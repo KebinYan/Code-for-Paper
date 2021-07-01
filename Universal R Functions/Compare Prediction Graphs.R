@@ -2,24 +2,44 @@
 # prediction for each timestamp in the accelerometer data
 # Function parameters: accelerometer result data set, gyroscope result data set, time difference data set got from the time difference function
 GyroOnAccTime <- function(accResult, gyroResult, timeDifference){
-  # create an index column for indices in the gyroscope data set that are closest to each timestamp in accelerometer data
-  index <- as.data.frame(rep(NA, nrow(accResult)))
-  j=1
-  for(i in 1:nrow(accResult)){
-    time_diff <- 999
-    while(j <= nrow(timeDifference) && accResult$timestamp[i]==timeDifference$acc_timestamp[j]){
-      if(time_diff > timeDifference$time_difference[j]){
-        time_diff <- timeDifference$time_difference[j]
-        index[i,1] <- j
-      }
-      j = j+1 #since the timestamps follow an increasing pattern down the rows, there's no need to check the timestamps from beginning
-    }
-  }
-  
-  gyro_on_acc_time <- subset(gyroResult[unlist(index),])
-  gyro_on_acc_time <- cbind(accResult$timestamp, gyro_on_acc_time)
+  gyro_on_acc_time <- as.data.frame(cbind(accResult$timestamp[1], gyroResult[1,]))
   colnames(gyro_on_acc_time)[1] <- "acc.timestamp"
+  for(i in 1:nrow(accResult)){
+    for(j in 1:nrow(gyroResult)){
+      if(timeDifference$closest_gyro_timestamp[i] == gyroResult$timestamp[j]){
+        gyro_data <- gyroResult[j,]
+        break
+      }
+    }
+    new_row <- cbind(accResult$timestamp[i], gyro_data)
+    colnames(new_row)[1] <- "acc.timestamp"
+    gyro_on_acc_time <- rbind(gyro_on_acc_time, new_row)
+  }
+  gyro_on_acc_time <- gyro_on_acc_time[-1,]
   return(gyro_on_acc_time) # return a subset of gyroscope result on accelerometer's timestamp 
+}
+
+# remove rows with no final prediction
+RemoveNAs <- function(result){
+  revised_result <- subset(result, !is.na(result$label.predict))
+  return(revised_result)
+}
+
+# remove the extra end point in accelerometer result or in the gyroscope on accelerometer result
+RemoveExtra <- function(revised_acc, revised_gyro_on_acc){
+  nrow_acc <- nrow(revised_acc)
+  nrow_gyro <- nrow(revised_gyro_on_acc)
+  
+  if(nrow_acc > nrow_gyro){
+    revised_acc <- revised_acc[-nrow_acc,]
+    print("acc revised")
+    return(revised_acc)
+  }
+  else if(nrow_gyro > nrow_acc){
+    revised_gyro_on_acc <- revised_gyro_on_acc[-nrow_gyro,]
+    print("gyro revised")
+    return(revised_gyro_on_acc)
+  }
 }
 
 # create a graph comparing true labels, accelerometer predicitons, gyroscope predcitions, and combined data predictions
@@ -31,9 +51,9 @@ combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult
   gyroResult$timeElapsed <- (gyroResult$acc.timestamp - gyroResult$acc.timestamp[1])/1000
   combinedResult$timeElapsed <- (combinedResult$timestamp - combinedResult$timestamp[1])/1000
   
-  accResult <- na.omit(accResult)
-  gyroResult <- na.omit(gyroResult)
-  combinedResult <- na.omit(combinedResult)
+  accResult <- subset(accResult, !is.na(accResult$label))
+  gyroResult <- subset(gyroResult, !is.na(gyroResult$label))
+  combinedResult <- subset(combinedResult, !is.na(combinedResult$label))
   
   if (is.na(xRange[1])){
     xRange <- range(combinedResult$timeElapsed[!is.na(combinedResult$label)])
@@ -45,7 +65,7 @@ combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult
   else{
     par(mfrow = c(4,1))
   }
-  par(mar=c(2,1,2,1))
+  par(mar=c(3,1,3,1))
   
   for (i in 1:numActivities){
     plot(combinedResult$timeElapsed[!is.na(combinedResult$label) & combinedResult$label == activityList[i]], 
@@ -53,7 +73,7 @@ combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult
          col = activityCols[i], xlim = xRange, type = "h", yaxt = 'n',
          xlab = "", ylab = "", ylim = c(0,1),
          main = "Truth",
-         cex.lab=1, cex.axis=1.2, cex.main=1.5, cex.sub=2)  
+         cex.lab=1, cex.axis=1.5, cex.main=2, cex.sub=1)  
     if (i != numActivities){
       par(new = TRUE)
     }
@@ -65,8 +85,8 @@ combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult
          rep(1, sum(accResult$label.predict == activityList[i], na.rm = TRUE)), 
          col = activityCols[i], xlim = xRange, type = "h", yaxt = 'n',
          xlab = "", ylab = "", ylim = c(0,1),
-         main = "Accelerometer Prediction",
-         cex.lab=1, cex.axis=1.2, cex.main=1.5, cex.sub=1)
+         main = "Accelerometer-only Prediction",
+         cex.lab=1, cex.axis=1.5, cex.main=2, cex.sub=1)
     if (i != numActivities){
       par(new = TRUE)
     }
@@ -77,8 +97,8 @@ combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult
          rep(1, sum(gyroResult$label.predict == activityList[i], na.rm = TRUE)), 
          col = activityCols[i], xlim = xRange, type = "h", yaxt = 'n',
          xlab = "", ylab = "", ylim = c(0,1),
-         main = " Gyroscope Prediction",
-         cex.lab=1, cex.axis=1.2, cex.main=1.5, cex.sub=1)
+         main = " Gyroscope-only Prediction",
+         cex.lab=1, cex.axis=1.5, cex.main=2, cex.sub=1)
     if (i != numActivities){
       par(new = TRUE)
     }
@@ -89,19 +109,19 @@ combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult
          rep(1, sum(combinedResult$label.predict == activityList[i], na.rm = TRUE)), 
          col = activityCols[i], xlim = xRange, type = "h", yaxt = 'n',
          xlab = "", ylab = "", ylim = c(0,1),
-         main = "Combined Prediction",
-         cex.lab=1, cex.axis=1.2, cex.main=1.5, cex.sub=1)
+         main = "Joint-sensor Prediction",
+         cex.lab=1, cex.axis=1.5, cex.main=2, cex.sub=1)
     if (i != numActivities){
       par(new = TRUE)
     }
   }
-  mtext("Time Elapsed", side = 1, line = 2)
+  mtext("Time Elapsed (sec)", side = 1, line = 4, cex = 1.3)
   
   if(legend)
   {
-    par(mar=c(2,1,1,1))
+    par(mar=c(1,1,2.5,1))
     plot.new()
-    legend("center", legend=activityList, fill=activityCols, cex=1.5, ncol = 4, text.font=1, box.lty=0)
+    legend("center", legend=activityList, fill=activityCols, cex=1.7, ncol = 4, text.font=1.5, box.lty=0)
   }
 }
 

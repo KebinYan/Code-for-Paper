@@ -15,37 +15,37 @@ source("~/Desktop/WFU/URECA/R_template/Plot Confusion Matrix.R")
 
 
 ```{r}
-combined_result_step1 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step1/front_pred.csv")
-acc_result_step1 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step1/acc_front_pred.csv")
-gyro_result_step1 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step1/gyro_front_pred.csv")
+combined_result_step1 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step1/revised_combined_front_pred.csv")
+acc_result_step1 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step1/revised_acc_front_pred.csv")
+gyro_result_step1 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step1/revised_gyro_on_acc_front_pred.csv")
 
-combined_result_step2 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step2/front_pred.csv")
-acc_result_step2 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step2/acc_front_pred.csv")
-gyro_result_step2 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step2/gyro_front_pred.csv")
+combined_result_step2 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step2/revised_combined_front_pred.csv")
+acc_result_step2 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step2/revised_acc_front_pred.csv")
+gyro_result_step2 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step2/revised_gyro_on_acc_front_pred.csv")
 
-combined_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/front_pred_fast.csv")
-acc_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/acc_front_pred_fast.csv")
-gyro_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/gyro_front_pred_fast.csv")
+combined_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/fast_walk/revised_combined_front_pred_fast.csv")
+acc_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/fast_walk/revised_acc_front_pred_fast.csv")
+gyro_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/fast_walk/revised_gyro_on_acc_front_pred_fast.csv")
 
-combined_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/front_pred_normal.csv")
-acc_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/acc_front_pred_normal.csv")
-gyro_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/gyro_front_pred_normal.csv")
+combined_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/normal_walk/revised_combined_front_pred_normal.csv")
+acc_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/normal_walk/revised_acc_front_pred_normal.csv")
+gyro_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/normal_walk/revised_gyro_on_acc_front_pred_normal.csv")
 
-combined_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/front_pred_slow.csv")
-acc_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/acc_front_pred_slow.csv")
-gyro_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/gyro_front_pred_slow.csv")
+combined_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/slow_walk/revised_combined_front_pred_slow.csv")
+acc_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/slow_walk/revised_acc_front_pred_slow.csv")
+gyro_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step3/slow_walk/revised_gyro_on_acc_front_pred_slow.csv")
 
-combined_result_step5 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step5/front_pred.csv")
-acc_result_step5 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step5/acc_front_pred.csv")
-gyro_result_step5 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step5/gyro_front_pred.csv")
+combined_result_step5 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step5/revised_combined_front_pred.csv")
+acc_result_step5 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step5/revised_acc_front_pred.csv")
+gyro_result_step5 <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step5/revised_gyro_on_acc_front_pred.csv")
 
-combined_result_step6_stairDown <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairDown/front_pred.csv")
-acc_result_step6_stairDown <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairDown/acc_front_pred.csv")
-gyro_result_step6_stairDown <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairDown/gyro_front_pred.csv")
+combined_result_step6_stairDown <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairDown/revised_combined_front_pred.csv")
+acc_result_step6_stairDown <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairDown/revised_acc_front_pred.csv")
+gyro_result_step6_stairDown <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairDown/revised_gyro_on_acc_front_pred.csv")
 
-combined_result_step6_stairUp <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairUp/front_pred.csv")
-acc_result_step6_stairUp <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairUp/acc_front_pred.csv")
-gyro_result_step6_stairUp <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairUp/gyro_front_pred.csv")
+combined_result_step6_stairUp <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairUp/revised_combined_front_pred.csv")
+acc_result_step6_stairUp <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairUp/revised_acc_front_pred.csv")
+gyro_result_step6_stairUp <- read.csv("~/Desktop/csv/subject1/test/Prediction/Step6/stairUp/revised_gyro_on_acc_front_pred.csv")
 ```
 
 ```{r}
@@ -69,17 +69,16 @@ combined_result_step1$movelet.label <- as.factor(combined_result_step1$movelet.l
 ```
 
 ```{r, warning=FALSE, fig.asp=1.1}
-# par(mfrow = c(3,1))
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step1_acc.pdf")
-plotConfusionMatrix(acc_result_step1, "Confusion Matrix Step 1: Accelerometer", Activities)
+plotConfusionMatrix(acc_result_step1, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step1_gyro.pdf")
-plotConfusionMatrix(gyro_result_step1, "Confusion Matrix Step 1: Gyroscope", Activities)
+plotConfusionMatrix(gyro_result_step1, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step1_combined.pdf")
-plotConfusionMatrix(combined_result_step1, "Confusion Matrix Step 1: Combined", Activities)
+plotConfusionMatrix(combined_result_step1, Activities, TRUE)
 dev.off()
 ```
 
@@ -103,15 +102,15 @@ combined_result_step2$movelet.label <- as.factor(combined_result_step2$movelet.l
 ```{r, warning=FALSE, fig.asp=1.1}
 # par(mfrow = c(3,1))
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step2_acc.pdf")
-plotConfusionMatrix(acc_result_step2, "Confusion Matrix Step 2: Accelerometer", Activities)
+plotConfusionMatrix(acc_result_step2, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step2_gyro.pdf")
-plotConfusionMatrix(gyro_result_step2, "Confusion Matrix Step 2: Gyroscope", Activities)
+plotConfusionMatrix(gyro_result_step2, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step2_combined.pdf")
-plotConfusionMatrix(combined_result_step2, "Confusion Matrix Step 2: Combined", Activities)
+plotConfusionMatrix(combined_result_step2, Activities, TRUE)
 dev.off()
 ```
 
@@ -141,15 +140,15 @@ combined_result_step3$movelet.label <- as.factor(combined_result_step3$movelet.l
 ```{r, warning=FALSE, fig.asp=1.1}
 # par(mfrow = c(3,1))
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step3_acc.pdf")
-plotConfusionMatrix(acc_result_step3, "Confusion Matrix Step 3: Accelerometer", Activities)
+plotConfusionMatrix(acc_result_step3, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step3_gyro.pdf")
-plotConfusionMatrix(gyro_result_step3, "Confusion Matrix Step 3: Gyroscope", Activities)
+plotConfusionMatrix(gyro_result_step3, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step3_combined.pdf")
-plotConfusionMatrix(combined_result_step3, "Confusion Matrix Step 3: Combined", Activities)
+plotConfusionMatrix(combined_result_step3, Activities, TRUE)
 dev.off()
 ```
 
@@ -172,15 +171,15 @@ combined_result_step5$movelet.label <- as.factor(combined_result_step5$movelet.l
 ```{r, warning=FALSE, fig.asp=1.1}
 # par(mfrow = c(3,1))
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step5_acc.pdf")
-plotConfusionMatrix(acc_result_step5, "Confusion Matrix Step 5: Accelerometer", Activities)
+plotConfusionMatrix(acc_result_step5, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step5_gyro.pdf")
-plotConfusionMatrix(gyro_result_step5, "Confusion Matrix Step 5: Gyroscope", Activities)
+plotConfusionMatrix(gyro_result_step5, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step5_combined.pdf")
-plotConfusionMatrix(combined_result_step5, "Confusion Matrix Step 5: Combined", Activities)
+plotConfusionMatrix(combined_result_step5, Activities, TRUE)
 dev.off()
 ```
 
@@ -209,15 +208,15 @@ combined_result_step6$movelet.label <- as.factor(combined_result_step6$movelet.l
 ```{r, warning=FALSE, fig.asp=1.1}
 # par(mfrow = c(3,1))
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step6_acc.pdf")
-plotConfusionMatrix(acc_result_step6, "Confusion Matrix Step 6: Accelerometer", Activities)
+plotConfusionMatrix(acc_result_step6, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step6_gyro.pdf")
-plotConfusionMatrix(gyro_result_step6, "Confusion Matrix Step 6: Gyroscope", Activities)
+plotConfusionMatrix(gyro_result_step6, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/step6_combined.pdf")
-plotConfusionMatrix(combined_result_step6, "Confusion Matrix Step 6: Combined", Activities)
+plotConfusionMatrix(combined_result_step6, Activities, TRUE)
 dev.off()
 ```
 
@@ -229,15 +228,15 @@ combined_result_summary <- rbind(combined_result_step1, combined_result_step2, c
 
 ```{r, warning=FALSE, fig.asp=1.1}
 pdf(file = "~/Desktop/Confusion Matrix/subject1/all_steps_acc.pdf")
-plotConfusionMatrix(acc_result_summary, "Confusion Matrix All Steps: Accelerometer", Activities)
+plotConfusionMatrix(acc_result_summary, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/all_steps_gyro.pdf")
-plotConfusionMatrix(gyro_result_summary, "Confusion Matrix All Steps: Gyroscope", Activities)
+plotConfusionMatrix(gyro_result_summary, Activities, TRUE)
 dev.off()
 
 pdf(file = "~/Desktop/Confusion Matrix/subject1/all_steps_combined.pdf")
-plotConfusionMatrix(combined_result_summary, "Confusion Matrix All Steps: Combined", Activities)
+plotConfusionMatrix(combined_result_summary, Activities, TRUE)
 dev.off()
 ```
 

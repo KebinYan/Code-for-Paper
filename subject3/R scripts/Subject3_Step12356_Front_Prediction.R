@@ -1,4 +1,5 @@
 library(data.table)
+library(gridExtra)
 source("~/Desktop/WFU/URECA/R_template/six axes/Modified Movelet Method.R")
 source("~/Desktop/WFU/URECA/R_template/Combine Acc and Gyro Data Using Linear Interpolation.R")
 
@@ -25,8 +26,14 @@ acc_trainStairUp<- subset(acc_front_stairUp, acc_front_stairUp$timestamp > (acc_
 acc_stairDownTime <- setDT(acc_front_stairDown)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
 acc_trainStairDown <- subset(acc_front_stairDown, acc_front_stairDown$timestamp > (acc_stairDownTime - trainingSec/2) & acc_front_stairDown$timestamp < (acc_stairDownTime + trainingSec/2))
 
+acc_front_sit <- subset(acc_front_chairStand1, label == "sit1")
+acc_sitTime <- setDT(acc_front_sit)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
+acc_trainSit <- subset(acc_front_sit, acc_front_sit$timestamp > (acc_sitTime - trainingSec/2) & acc_front_sit$timestamp < (acc_sitTime + trainingSec/2))
+acc_front_sitToStand <- subset(acc_front_chairStand1, label == "sitToStand1")
+acc_front_standToSit <- subset(acc_front_chairStand1, label == "standToSit1")
+
 # create a training set with all activities
-acc_trainingSet <- rbind.data.frame(acc_trainWalk, acc_trainStand, acc_trainStairUp, acc_trainStairDown, acc_front_chairStand1)
+acc_trainingSet <- rbind.data.frame(acc_trainWalk, acc_trainStand, acc_trainStairUp, acc_trainStairDown, acc_trainSit, acc_front_sitToStand, acc_front_standToSit)
 
 # change the label in training set to the same notations as in the test set
 for(i in 1:nrow(acc_trainingSet)){
@@ -88,8 +95,15 @@ gyro_trainStairUp<- subset(gyro_front_stairUp, gyro_front_stairUp$timestamp > (g
 gyro_stairDownTime <- setDT(gyro_front_stairDown)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
 gyro_trainStairDown <- subset(gyro_front_stairDown, gyro_front_stairDown$timestamp > (gyro_stairDownTime - trainingSec/2) & gyro_front_stairDown$timestamp < (gyro_stairDownTime + trainingSec/2))
 
+gyro_front_sit <- subset(gyro_front_chairStand1, label == "sit1")
+gyro_sitTime <- setDT(gyro_front_sit)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
+gyro_trainSit <- subset(gyro_front_sit, gyro_front_sit$timestamp > (gyro_sitTime - trainingSec/2) & gyro_front_sit$timestamp < (gyro_sitTime + trainingSec/2))
+
+gyro_front_sitToStand <- subset(gyro_front_chairStand1, label == "sitToStand1")
+gyro_front_standToSit <- subset(gyro_front_chairStand1, label == "standToSit1")
+
 # create a training set with all activities
-gyro_trainingSet <- rbind.data.frame(gyro_trainWalk, gyro_trainStand, gyro_trainStairUp, gyro_trainStairDown, gyro_front_chairStand1)
+gyro_trainingSet <- rbind.data.frame(gyro_trainWalk, gyro_trainStand, gyro_trainStairUp, gyro_trainStairDown, gyro_trainSit, gyro_front_sitToStand, gyro_front_standToSit)
 
 # change the label in training set to the same notations as in the test set
 for(i in 1:nrow(gyro_trainingSet)){
@@ -164,8 +178,15 @@ trainStairUp<- subset(stairUp_front, stairUp_front$timestamp > (stairUpTime - tr
 stairDownTime <- setDT(stairDown_front)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
 trainStairDown <- subset(stairDown_front, stairDown_front$timestamp > (stairDownTime - trainingSec/2) & stairDown_front$timestamp < (stairDownTime + trainingSec/2))
 
+front_sit <- subset(chairStand1_front, label == "sit1")
+sitTime <- setDT(front_sit)[, if(.N > 1) .SD[ceiling(.N/2):ceiling(.N/2)] else .SD]$timestamp
+trainSit <- subset(front_sit, front_sit$timestamp > (sitTime - trainingSec/2) & front_sit$timestamp < (sitTime + trainingSec/2))
+
+front_sitToStand <- subset(chairStand1_front, label == "sitToStand1")
+front_standToSit <- subset(chairStand1_front, label == "standToSit1")
+
 # create a training set with all activities
-trainingSet <- rbind.data.frame(trainWalk, trainStand, trainStairUp, trainStairDown, chairStand1_front)
+trainingSet <- rbind.data.frame(trainWalk, trainStand, trainStairUp, trainStairDown, front_sit, front_sitToStand, front_standToSit)
 
 # change the label in training set to the same notations as in the test set
 for(i in 1:nrow(trainingSet)){
@@ -207,7 +228,6 @@ test_front_step3_normalWalk <- read.csv("~/Desktop/csv/subject3/test/Step3/norma
 test_front_step3_slowWalk <- read.csv("~/Desktop/csv/subject3/test/Step3/slow_walk/combined_front.csv")
 test_front_step6_stairDown <- read.csv("~/Desktop/csv/subject3/test/Step6/stairDown/combined_front.csv")
 test_front_step6_stairUp <- read.csv("~/Desktop/csv/subject3/test/Step6/stairUp/combined_front.csv")
-
 
 # create an axes dataset including only the axes
 axes_step1 <- cbind.data.frame(test_front_step1$acc.x, test_front_step1$acc.y, test_front_step1$acc.z, test_front_step1$gyro.x, test_front_step1$gyro.y, test_front_step1$gyro.z)
@@ -254,11 +274,26 @@ write.csv(combined_result_step1, "~/Desktop/csv/subject3/test/Prediction/Step1/f
 combined_result_step2 <- movelet_Bai2012_singleSensor_modified(test_front_step2, axes_step2, training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(combined_result_step2, "~/Desktop/csv/subject3/test/Prediction/Step2/front_pred.csv")
 combined_result_step3_fastWalk <- movelet_Bai2012_singleSensor_modified(test_front_step3_fastWalk, axes_step3_fastWalk, training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(combined_result_step3_fastWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/front_pred_fast.csv")
+for(i in 1:nrow(combined_result_step3_fastWalk)){
+  if(combined_result_step3_fastWalk$label[i] == "fast"){
+    combined_result_step3_fastWalk$label[i] = "walk"
+  }
+}
+write.csv(combined_result_step3_fastWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/fast_walk/front_pred_fast.csv")
 combined_result_step3_normalWalk <- movelet_Bai2012_singleSensor_modified(test_front_step3_normalWalk, axes_step3_normalWalk, training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(combined_result_step3_normalWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/front_pred_normal.csv")
+for(i in 1:nrow(combined_result_step3_normalWalk)){
+  if(combined_result_step3_normalWalk$label[i] == "normal"){
+    combined_result_step3_normalWalk$label[i] = "walk"
+  }
+}
+write.csv(combined_result_step3_normalWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/normal_walk/front_pred_normal.csv")
 combined_result_step3_slowWalk <- movelet_Bai2012_singleSensor_modified(test_front_step3_slowWalk, axes_step3_slowWalk, training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(combined_result_step3_slowWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/front_pred_slow.csv")
+for(i in 1:nrow(combined_result_step3_slowWalk)){
+  if(combined_result_step3_slowWalk$label[i] == "slow"){
+    combined_result_step3_slowWalk$label[i] = "walk"
+  }
+}
+write.csv(combined_result_step3_slowWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/slow_walk/front_pred_slow.csv")
 combined_result_step5 <- movelet_Bai2012_singleSensor_modified(test_front_step5, axes_step5, training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(combined_result_step5, "~/Desktop/csv/subject3/test/Prediction/Step5/front_pred.csv")
 combined_result_step6_stairUp <- movelet_Bai2012_singleSensor_modified(test_front_step6_stairUp, axes_step6_stairUp, training, frequency, moveletLength, distOption, trainingActivities, useMag)
@@ -271,11 +306,26 @@ write.csv(acc_result_step1, "~/Desktop/csv/subject3/test/Prediction/Step1/acc_fr
 acc_result_step2 <- movelet_Bai2012_singleSensor_modified(test_acc_front_step2, acc_axes_step2, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(acc_result_step2, "~/Desktop/csv/subject3/test/Prediction/Step2/acc_front_pred.csv")
 acc_result_step3_fastWalk <- movelet_Bai2012_singleSensor_modified(test_acc_front_step3_fastWalk, acc_axes_step3_fastWalk, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(acc_result_step3_fastWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/acc_front_pred_fast.csv")
+for(i in 1:nrow(acc_result_step3_fastWalk)){
+  if(acc_result_step3_fastWalk$label[i] == "fast"){
+    acc_result_step3_fastWalk$label[i] = "walk"
+  }
+}
+write.csv(acc_result_step3_fastWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/fast_walk/acc_front_pred_fast.csv")
 acc_result_step3_normalWalk <- movelet_Bai2012_singleSensor_modified(test_acc_front_step3_normalWalk, acc_axes_step3_normalWalk, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(acc_result_step3_normalWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/acc_front_pred_normal.csv")
+for(i in 1:nrow(acc_result_step3_normalWalk)){
+  if(acc_result_step3_normalWalk$label[i] == "normal"){
+    acc_result_step3_normalWalk$label[i] = "walk"
+  }
+}
+write.csv(acc_result_step3_normalWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/normal_walk/acc_front_pred_normal.csv")
 acc_result_step3_slowWalk <- movelet_Bai2012_singleSensor_modified(test_acc_front_step3_slowWalk, acc_axes_step3_slowWalk, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(acc_result_step3_slowWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/acc_front_pred_slow.csv")
+for(i in 1:nrow(acc_result_step3_slowWalk)){
+  if(acc_result_step3_slowWalk$label[i] == "slow"){
+    acc_result_step3_slowWalk$label[i] = "walk"
+  }
+}
+write.csv(acc_result_step3_slowWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/slow_walk/acc_front_pred_slow.csv")
 acc_result_step5 <- movelet_Bai2012_singleSensor_modified(test_acc_front_step5, acc_axes_step5, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(acc_result_step5, "~/Desktop/csv/subject3/test/Prediction/Step5/acc_front_pred.csv")
 acc_result_step6_stairDown <- movelet_Bai2012_singleSensor_modified(test_acc_front_step6_stairDown, acc_axes_step6_stairDown, acc_training, frequency, moveletLength, distOption, trainingActivities, useMag)
@@ -288,11 +338,26 @@ write.csv(gyro_result_step1, "~/Desktop/csv/subject3/test/Prediction/Step1/gyro_
 gyro_result_step2 <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step2, gyro_axes_step2, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(gyro_result_step2, "~/Desktop/csv/subject3/test/Prediction/Step2/gyro_front_pred.csv")
 gyro_result_step3_fastWalk <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step3_fastWalk, gyro_axes_step3_fastWalk, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(gyro_result_step3_fastWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/gyro_front_pred_fast.csv")
+for(i in 1:nrow(gyro_result_step3_fastWalk)){
+  if(gyro_result_step3_fastWalk$label[i] == "fast"){
+    gyro_result_step3_fastWalk$label[i] = "walk"
+  }
+}
+write.csv(gyro_result_step3_fastWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/fast_walk/gyro_front_pred_fast.csv")
 gyro_result_step3_normalWalk <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step3_normalWalk, gyro_axes_step3_normalWalk, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(gyro_result_step3_normalWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/gyro_front_pred_normal.csv")
+for(i in 1:nrow(gyro_result_step3_normalWalk)){
+  if(gyro_result_step3_normalWalk$label[i] == "normal"){
+    gyro_result_step3_normalWalk$label[i] = "walk"
+  }
+}
+write.csv(gyro_result_step3_normalWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/normal_walk/gyro_front_pred_normal.csv")
 gyro_result_step3_slowWalk <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step3_slowWalk, gyro_axes_step3_slowWalk, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
-write.csv(gyro_result_step3_slowWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/gyro_front_pred_slow.csv")
+for(i in 1:nrow(gyro_result_step3_slowWalk)){
+  if(gyro_result_step3_slowWalk$label[i] == "slow"){
+    gyro_result_step3_slowWalk$label[i] = "walk"
+  }
+}
+write.csv(gyro_result_step3_slowWalk, "~/Desktop/csv/subject3/test/Prediction/Step3/slow_walk/gyro_front_pred_slow.csv")
 gyro_result_step5 <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step5, gyro_axes_step5, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(gyro_result_step5, "~/Desktop/csv/subject3/test/Prediction/Step5/gyro_front_pred.csv")
 gyro_result_step6_stairDown <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step6_stairDown, gyro_axes_step6_stairDown, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
@@ -315,23 +380,8 @@ xRange <- NA
 ##predicted labels on the bottom
 plotActivityPrediction(combined_result_step1, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(combined_result_step2, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(combined_result_step3_fastWalk)){
-  if(combined_result_step3_fastWalk$label[i] == "fast"){
-    combined_result_step3_fastWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(combined_result_step3_fastWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(combined_result_step3_normalWalk)){
-  if(combined_result_step3_normalWalk$label[i] == "normal"){
-    combined_result_step3_normalWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(combined_result_step3_normalWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(combined_result_step3_slowWalk)){
-  if(combined_result_step3_slowWalk$label[i] == "slow"){
-    combined_result_step3_slowWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(combined_result_step3_slowWalk, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(combined_result_step5, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(combined_result_step6_stairUp, xRange, activityList, activityCols, TRUE)
@@ -339,23 +389,8 @@ plotActivityPrediction(combined_result_step6_stairDown, xRange, activityList, ac
 
 plotActivityPrediction(acc_result_step1, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(acc_result_step2, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(acc_result_step3_fastWalk)){
-  if(acc_result_step3_fastWalk$label[i] == "fast"){
-    acc_result_step3_fastWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(acc_result_step3_fastWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(acc_result_step3_normalWalk)){
-  if(acc_result_step3_normalWalk$label[i] == "normal"){
-    acc_result_step3_normalWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(acc_result_step3_normalWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(acc_result_step3_slowWalk)){
-  if(acc_result_step3_slowWalk$label[i] == "slow"){
-    acc_result_step3_slowWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(acc_result_step3_slowWalk, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(acc_result_step5, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(acc_result_step6_stairDown, xRange, activityList, activityCols, TRUE)
@@ -363,25 +398,9 @@ plotActivityPrediction(acc_result_step6_stairUp, xRange, activityList, activityC
 
 plotActivityPrediction(gyro_result_step1, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(gyro_result_step2, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(gyro_result_step3_fastWalk)){
-  if(gyro_result_step3_fastWalk$label[i] == "fast"){
-    gyro_result_step3_fastWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(gyro_result_step3_fastWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(gyro_result_step3_normalWalk)){
-  if(gyro_result_step3_normalWalk$label[i] == "normal"){
-    gyro_result_step3_normalWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(gyro_result_step3_normalWalk, xRange, activityList, activityCols, TRUE)
-for(i in 1:nrow(gyro_result_step3_slowWalk)){
-  if(gyro_result_step3_slowWalk$label[i] == "slow"){
-    gyro_result_step3_slowWalk$label[i] = "walk"
-  }
-}
 plotActivityPrediction(gyro_result_step3_slowWalk, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(gyro_result_step5, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(gyro_result_step6_stairDown, xRange, activityList, activityCols, TRUE)
 plotActivityPrediction(gyro_result_step6_stairUp, xRange, activityList, activityCols, TRUE)
-

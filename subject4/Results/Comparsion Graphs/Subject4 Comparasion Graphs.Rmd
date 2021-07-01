@@ -15,22 +15,41 @@ source("~/Desktop/WFU/URECA/R_template/Examining Time Difference.R")
 ```
 
 ```{r}
+activityList <- c("walk", "stand","stairUp", "stairDown","standToSit","sit","sitToStand")
+activityCols <-  c("#000000", "#56B4E9", "#E69F00", "#009E73", "#F0E442", "#CC79A7", "#D55E00")
+activityList1 <- c("walk", "stand","stairUp", "stairDown","standToSit","sit","sitToStand","revolving door")
+activityCols1 <-  c("#000000", "#56B4E9", "#E69F00", "#009E73", "#F0E442", "#CC79A7", "#D55E00", "#0072B2")
+```
+
+# Comparison Graph for Step 1
+```{r}
 combined_result_step1 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step1/front_pred.csv")
 acc_result_step1 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step1/acc_front_pred.csv")
 gyro_result_step1 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step1/gyro_front_pred.csv")
 ```
 
 ```{r}
-activityList <- c("walk", "stand","stairUp", "stairDown","standToSit","sit","sitToStand")
-activityCols <-  c("#000000", "#56B4E9", "#E69F00", "#009E73", "#F0E442", "#CC79A7", "#D55E00")
-```
-
-# Comparison Graph for Step 1
-```{r}
 time_difference_step1 <- CalculateTimeDifference(acc_result_step1, gyro_result_step1)
 gyro_on_acc_time_step1 <- GyroOnAccTime(acc_result_step1, gyro_result_step1,time_difference_step1)
+
+revised_acc_step1 <- RemoveNAs(acc_result_step1)
+revised_gyro_on_acc_step1 <- RemoveNAs(gyro_on_acc_time_step1)
+revised_combined_step1 <- RemoveNAs(combined_result_step1)
+revised_data_step1 <- RemoveExtra(revised_acc_step1, revised_gyro_on_acc_step1)
+revised_acc_step1 <- revised_data_step1
+
+write.csv(revised_acc_step1, "~/Desktop/csv/subject4/test/Prediction/Step1/revised_acc_front_pred.csv")
+write.csv(revised_gyro_on_acc_step1, "~/Desktop/csv/subject4/test/Prediction/Step1/revised_gyro_on_acc_front_pred.csv")
+write.csv(revised_combined_step1, "~/Desktop/csv/subject4/test/Prediction/Step1/revised_combined_front_pred.csv")
+```
+
+```{r}
+revised_acc_step1 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step1/revised_acc_front_pred.csv")
+revised_gyro_on_acc_step1 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step1/revised_gyro_on_acc_front_pred.csv")
+revised_combined_step1 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step1/revised_combined_front_pred.csv")
+
 pdf(file = "~/Desktop/Prediction Graphs/subject4/step1.pdf")
-combinedPlotActivityPrediction(acc_result_step1, gyro_on_acc_time_step1, combined_result_step1, NA, activityList, activityCols, TRUE)
+combinedPlotActivityPrediction(revised_acc_step1, revised_gyro_on_acc_step1, revised_combined_step1, NA, activityList, activityCols, TRUE)
 dev.off()
 ```
 
@@ -45,56 +64,120 @@ gyro_result_step2 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step2/gyro
 ```{r}
 time_difference_step2 <- CalculateTimeDifference(acc_result_step2, gyro_result_step2)
 gyro_on_acc_time_step2 <- GyroOnAccTime(acc_result_step2, gyro_result_step2,time_difference_step2)
+
+revised_acc_step2 <- RemoveNAs(acc_result_step2)
+revised_gyro_on_acc_step2 <- RemoveNAs(gyro_on_acc_time_step2)
+revised_combined_step2 <- RemoveNAs(combined_result_step2)
+
+write.csv(revised_acc_step2, "~/Desktop/csv/subject4/test/Prediction/Step2/revised_acc_front_pred.csv")
+write.csv(revised_gyro_on_acc_step2, "~/Desktop/csv/subject4/test/Prediction/Step2/revised_gyro_on_acc_front_pred.csv")
+write.csv(revised_combined_step2, "~/Desktop/csv/subject4/test/Prediction/Step2/revised_combined_front_pred.csv")
+```
+
+```{r}
+revised_acc_step2 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step2/revised_acc_front_pred.csv")
+revised_gyro_on_acc_step2 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step2/revised_gyro_on_acc_front_pred.csv")
+revised_combined_step2 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step2/revised_combined_front_pred.csv")
+
 pdf(file = "~/Desktop/Prediction Graphs/subject4/step2.pdf")
-combinedPlotActivityPrediction(acc_result_step2, gyro_on_acc_time_step2, combined_result_step2, NA, activityList, activityCols, TRUE)
+combinedPlotActivityPrediction(revised_acc_step2, revised_gyro_on_acc_step2, revised_combined_step2, NA, activityList, activityCols, TRUE)
 dev.off()
 ```
 
 \newpage
 # Comparison Graph for Step 3 Fast Walk
 ```{r}
-combined_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/front_pred_fast.csv")
-acc_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/acc_front_pred_fast.csv")
-gyro_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/gyro_front_pred_fast.csv")
+combined_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/fast_walk/front_pred_fast.csv")
+acc_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/fast_walk/acc_front_pred_fast.csv")
+gyro_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/fast_walk/gyro_front_pred_fast.csv")
 ```
 
 ```{r}
 time_difference_step3_fastWalk <- CalculateTimeDifference(acc_result_step3_fastWalk, gyro_result_step3_fastWalk)
 gyro_on_acc_time_step3_fastWalk <- GyroOnAccTime(acc_result_step3_fastWalk, gyro_result_step3_fastWalk,time_difference_step3_fastWalk)
+
+revised_acc_step3_fastWalk <- RemoveNAs(acc_result_step3_fastWalk)
+revised_gyro_on_acc_step3_fastWalk <- RemoveNAs(gyro_on_acc_time_step3_fastWalk)
+revised_combined_step3_fastWalk <- RemoveNAs(combined_result_step3_fastWalk)
+
+write.csv(revised_acc_step3_fastWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/fast_walk/revised_acc_front_pred_fast.csv")
+write.csv(revised_gyro_on_acc_step3_fastWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/fast_walk/revised_gyro_on_acc_front_pred_fast.csv")
+write.csv(revised_combined_step3_fastWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/fast_walk/revised_combined_front_pred_fast.csv")
+```
+
+```{r}
+revised_acc_step3_fastWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/fast_walk/revised_acc_front_pred_fast.csv")
+revised_gyro_on_acc_step3_fastWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/fast_walk/revised_gyro_on_acc_front_pred_fast.csv")
+revised_combined_step3_fastWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/fast_walk/revised_combined_front_pred_fast.csv")
+
 pdf(file = "~/Desktop/Prediction Graphs/subject4/step3_fast_walk.pdf")
-combinedPlotActivityPrediction(acc_result_step3_fastWalk, gyro_on_acc_time_step3_fastWalk, combined_result_step3_fastWalk, NA, activityList, activityCols, TRUE)
+combinedPlotActivityPrediction(revised_acc_step3_fastWalk, revised_gyro_on_acc_step3_fastWalk, revised_combined_step3_fastWalk, NA, activityList, activityCols, TRUE)
 dev.off()
 ```
+
 
 \newpage
 # Comparison Graph for Step 3 Normal Walk
 ```{r}
-combined_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/front_pred_normal.csv")
-acc_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/acc_front_pred_normal.csv")
-gyro_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/gyro_front_pred_normal.csv")
+combined_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/normal_walk/front_pred_normal.csv")
+acc_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/normal_walk/acc_front_pred_normal.csv")
+gyro_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/normal_walk/gyro_front_pred_normal.csv")
 ```
 
 ```{r}
 time_difference_step3_normalWalk <- CalculateTimeDifference(acc_result_step3_normalWalk, gyro_result_step3_normalWalk)
-gyro_on_acc_time_step3_normalWalk <- GyroOnAccTime(acc_result_step3_normalWalk, acc_result_step3_normalWalk,time_difference_step3_normalWalk)
+gyro_on_acc_time_step3_normalWalk <- GyroOnAccTime(acc_result_step3_normalWalk, gyro_result_step3_normalWalk,time_difference_step3_normalWalk)
+
+revised_acc_step3_normalWalk <- RemoveNAs(acc_result_step3_normalWalk)
+revised_gyro_on_acc_step3_normalWalk <- RemoveNAs(gyro_on_acc_time_step3_normalWalk)
+revised_combined_step3_normalWalk <- RemoveNAs(combined_result_step3_normalWalk)
+
+write.csv(revised_acc_step3_normalWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/normal_walk/revised_acc_front_pred_normal.csv")
+write.csv(revised_gyro_on_acc_step3_normalWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/normal_walk/revised_gyro_on_acc_front_pred_normal.csv")
+write.csv(revised_combined_step3_normalWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/normal_walk/revised_combined_front_pred_normal.csv")
+```
+
+```{r}
+revised_acc_step3_normalWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/normal_walk/revised_acc_front_pred_normal.csv")
+revised_gyro_on_acc_step3_normalWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/normal_walk/revised_gyro_on_acc_front_pred_normal.csv")
+revised_combined_step3_normalWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/normal_walk/revised_combined_front_pred_normal.csv")
+
 pdf(file = "~/Desktop/Prediction Graphs/subject4/step3_normal_walk.pdf")
-combinedPlotActivityPrediction(acc_result_step3_normalWalk, gyro_on_acc_time_step3_normalWalk, combined_result_step3_normalWalk, NA, activityList, activityCols, TRUE)
+combinedPlotActivityPrediction(revised_acc_step3_normalWalk, revised_gyro_on_acc_step3_normalWalk, revised_combined_step3_normalWalk, NA, activityList, activityCols, TRUE)
 dev.off()
 ```
+
 
 \newpage
 # Comparison Graph for Step 3 Slow Walk
 ```{r}
-combined_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/front_pred_slow.csv")
-acc_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/acc_front_pred_slow.csv")
-gyro_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/gyro_front_pred_slow.csv")
+combined_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/slow_walk/front_pred_slow.csv")
+acc_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/slow_walk/acc_front_pred_slow.csv")
+gyro_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/slow_walk/gyro_front_pred_slow.csv")
 ```
 
 ```{r}
 time_difference_step3_slowWalk <- CalculateTimeDifference(acc_result_step3_slowWalk, gyro_result_step3_slowWalk)
 gyro_on_acc_time_step3_slowWalk <- GyroOnAccTime(acc_result_step3_slowWalk, gyro_result_step3_slowWalk,time_difference_step3_slowWalk)
+
+revised_acc_step3_slowWalk <- RemoveNAs(acc_result_step3_slowWalk)
+revised_gyro_on_acc_step3_slowWalk <- RemoveNAs(gyro_on_acc_time_step3_slowWalk)
+revised_combined_step3_slowWalk <- RemoveNAs(combined_result_step3_slowWalk)
+revised_data_step3_slowWalk <- RemoveExtra(revised_acc_step3_slowWalk, revised_gyro_on_acc_step3_slowWalk)
+revised_gyro_on_acc_step3_slowWalk <- revised_data_step3_slowWalk
+
+write.csv(revised_acc_step3_slowWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/slow_walk/revised_acc_front_pred_slow.csv")
+write.csv(revised_gyro_on_acc_step3_slowWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/slow_walk/revised_gyro_on_acc_front_pred_slow.csv")
+write.csv(revised_combined_step3_slowWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/slow_walk/revised_combined_front_pred_slow.csv")
+```
+
+```{r}
+revised_acc_step3_slowWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/slow_walk/revised_acc_front_pred_slow.csv")
+revised_gyro_on_acc_step3_slowWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/slow_walk/revised_gyro_on_acc_front_pred_slow.csv")
+revised_combined_step3_slowWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step3/slow_walk/revised_combined_front_pred_slow.csv")
+
 pdf(file = "~/Desktop/Prediction Graphs/subject4/step3_slow_walk.pdf")
-combinedPlotActivityPrediction(acc_result_step3_slowWalk, gyro_on_acc_time_step3_slowWalk, combined_result_step3_slowWalk, NA, activityList, activityCols, TRUE)
+combinedPlotActivityPrediction(revised_acc_step3_slowWalk, revised_gyro_on_acc_step3_slowWalk, revised_combined_step3_slowWalk, NA, activityList, activityCols, TRUE)
 dev.off()
 ```
 
@@ -109,13 +192,28 @@ gyro_result_step5 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step5/gyro
 ```{r}
 time_difference_step5 <- CalculateTimeDifference(acc_result_step5, gyro_result_step5)
 gyro_on_acc_time_step5 <- GyroOnAccTime(acc_result_step5, gyro_result_step5, time_difference_step5)
+
+revised_acc_step5 <- RemoveNAs(acc_result_step5)
+revised_gyro_on_acc_step5 <- RemoveNAs(gyro_on_acc_time_step5)
+revised_combined_step5 <- RemoveNAs(combined_result_step5)
+
+write.csv(revised_acc_step5, "~/Desktop/csv/subject4/test/Prediction/Step5/revised_acc_front_pred.csv")
+write.csv(revised_gyro_on_acc_step5, "~/Desktop/csv/subject4/test/Prediction/Step5/revised_gyro_on_acc_front_pred.csv")
+write.csv(revised_combined_step5, "~/Desktop/csv/subject4/test/Prediction/Step5/revised_combined_front_pred.csv")
+```
+
+```{r}
+revised_acc_step5 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step5/revised_acc_front_pred.csv")
+revised_gyro_on_acc_step5 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step5/revised_gyro_on_acc_front_pred.csv")
+revised_combined_step5 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step5/revised_combined_front_pred.csv")
+
 pdf(file = "~/Desktop/Prediction Graphs/subject4/step5.pdf")
-combinedPlotActivityPrediction(acc_result_step5, gyro_on_acc_time_step5, combined_result_step5, NA, activityList, activityCols, TRUE)
+combinedPlotActivityPrediction(revised_acc_step5, revised_gyro_on_acc_step5, revised_combined_step5, NA, activityList1, activityCols1, TRUE)
 dev.off()
 ```
 
 \newpage
-# Comparison Graph for Step 6 Stair Up
+# Comparison Graph for Step 6 Stair Down
 ```{r}
 combined_result_step6_stairDown <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step6/stairDown/front_pred.csv")
 acc_result_step6_stairDown <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step6/stairDown/acc_front_pred.csv")
@@ -125,13 +223,28 @@ gyro_result_step6_stairDown <- read.csv("~/Desktop/csv/subject4/test/Prediction/
 ```{r}
 time_difference_step6_stairDown <- CalculateTimeDifference(acc_result_step6_stairDown, gyro_result_step6_stairDown)
 gyro_on_acc_time_step6_stairDown <- GyroOnAccTime(acc_result_step6_stairDown, gyro_result_step6_stairDown, time_difference_step6_stairDown)
+
+revised_acc_step6_stairDown <- RemoveNAs(acc_result_step6_stairDown)
+revised_gyro_on_acc_step6_stairDown <- RemoveNAs(gyro_on_acc_time_step6_stairDown)
+revised_combined_step6_stairDown <- RemoveNAs(combined_result_step6_stairDown)
+
+write.csv(revised_acc_step6_stairDown, "~/Desktop/csv/subject4/test/Prediction/Step6/stairDown/revised_acc_front_pred.csv")
+write.csv(revised_gyro_on_acc_step6_stairDown, "~/Desktop/csv/subject4/test/Prediction/Step6/stairDown/revised_gyro_on_acc_front_pred.csv")
+write.csv(revised_combined_step6_stairDown, "~/Desktop/csv/subject4/test/Prediction/Step6/stairDown/revised_combined_front_pred.csv")
+```
+
+```{r}
+revised_acc_step6_stairDown <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step6/stairDown/revised_acc_front_pred.csv")
+revised_gyro_on_acc_step6_stairDown <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step6/stairDown/revised_gyro_on_acc_front_pred.csv")
+revised_combined_step6_stairDown <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step6/stairDown/revised_combined_front_pred.csv")
+
 pdf(file = "~/Desktop/Prediction Graphs/subject4/step6_stair_down.pdf")
-combinedPlotActivityPrediction(acc_result_step6_stairDown, gyro_on_acc_time_step6_stairDown, combined_result_step6_stairDown, NA, activityList, activityCols, TRUE)
+combinedPlotActivityPrediction(revised_acc_step6_stairDown, revised_gyro_on_acc_step6_stairDown, revised_combined_step6_stairDown, NA, activityList, activityCols, TRUE)
 dev.off()
 ```
 
 \newpage
-# Comparison Graph for Step 6 Stair Down
+# Comparison Graph for Step 6 Stair Up
 ```{r}
 combined_result_step6_stairUp <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step6/stairUp/front_pred.csv")
 acc_result_step6_stairUp <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step6/stairUp/acc_front_pred.csv")
@@ -141,8 +254,22 @@ gyro_result_step6_stairUp <- read.csv("~/Desktop/csv/subject4/test/Prediction/St
 ```{r}
 time_difference_step6_stairUp <- CalculateTimeDifference(acc_result_step6_stairUp, gyro_result_step6_stairUp)
 gyro_on_acc_time_step6_stairUp <- GyroOnAccTime(acc_result_step6_stairUp, gyro_result_step6_stairUp, time_difference_step6_stairUp)
-pdf(file = "~/Desktop/Prediction Graphs/subject4/step6_stair_up.pdf")
-combinedPlotActivityPrediction(acc_result_step6_stairUp, gyro_on_acc_time_step6_stairUp, combined_result_step6_stairUp, NA, activityList, activityCols, TRUE)
-dev.off()
+
+revised_acc_step6_stairUp <- RemoveNAs(acc_result_step6_stairUp)
+revised_gyro_on_acc_step6_stairUp <- RemoveNAs(gyro_on_acc_time_step6_stairUp)
+revised_combined_step6_stairUp <- RemoveNAs(combined_result_step6_stairUp)
+
+write.csv(revised_acc_step6_stairUp, "~/Desktop/csv/subject4/test/Prediction/Step6/stairUp/revised_acc_front_pred.csv")
+write.csv(revised_gyro_on_acc_step6_stairUp, "~/Desktop/csv/subject4/test/Prediction/Step6/stairUp/revised_gyro_on_acc_front_pred.csv")
+write.csv(revised_combined_step6_stairUp, "~/Desktop/csv/subject4/test/Prediction/Step6/stairUp/revised_combined_front_pred.csv")
 ```
 
+```{r}
+revised_acc_step6_stairUp <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step6/stairUp/revised_acc_front_pred.csv")
+revised_gyro_on_acc_step6_stairUp <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step6/stairUp/revised_gyro_on_acc_front_pred.csv")
+revised_combined_step6_stairUp <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step6/stairUp/revised_combined_front_pred.csv")
+
+pdf(file = "~/Desktop/Prediction Graphs/subject4/step6_stair_up.pdf")
+combinedPlotActivityPrediction(revised_acc_step6_stairUp, revised_gyro_on_acc_step6_stairUp, revised_combined_step6_stairUp, NA, activityList, activityCols, TRUE)
+dev.off()
+```
