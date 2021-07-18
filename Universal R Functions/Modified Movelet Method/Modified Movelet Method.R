@@ -1,3 +1,4 @@
+# The extension of the original movelet method
 # Requires preprocessing of data: create a new variable "axes" consisting of all the time series data 
 
 # Find the minimum discrepancy between the new movelet and the training data
