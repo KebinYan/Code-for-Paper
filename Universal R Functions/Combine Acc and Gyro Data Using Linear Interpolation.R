@@ -1,3 +1,4 @@
+# Create Joint-Sensor Data
 combineData <- function(AccData, GyroData){
   
   names(AccData)[names(AccData) == "timeElapsed"] <- "timestamp"
