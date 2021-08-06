@@ -30,13 +30,11 @@ gyro_result_step1 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step1/gyro
 
 ```{r}
 time_difference_step1 <- CalculateTimeDifference(acc_result_step1, gyro_result_step1)
-gyro_on_acc_time_step1 <- GyroOnAccTime(acc_result_step1, gyro_result_step1,time_difference_step1)
+revised_data_step1 <- getRevisedData(acc_result_step1, gyro_result_step1, combined_result_step1, time_difference_step1)
 
-revised_acc_step1 <- RemoveNAs(acc_result_step1)
-revised_gyro_on_acc_step1 <- RemoveNAs(gyro_on_acc_time_step1)
-revised_combined_step1 <- RemoveNAs(combined_result_step1)
-revised_data_step1 <- RemoveExtra(revised_acc_step1, revised_gyro_on_acc_step1)
-revised_acc_step1 <- revised_data_step1
+revised_acc_step1 <- revised_data_step1[["revised_acc"]]
+revised_gyro_on_acc_step1 <- revised_data_step1[["revised_gyro_on_acc"]]
+revised_combined_step1 <- revised_data_step1[["revised_combined"]]
 
 write.csv(revised_acc_step1, "~/Desktop/csv/subject4/test/Prediction/Step1/revised_acc_front_pred.csv")
 write.csv(revised_gyro_on_acc_step1, "~/Desktop/csv/subject4/test/Prediction/Step1/revised_gyro_on_acc_front_pred.csv")
@@ -63,11 +61,11 @@ gyro_result_step2 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step2/gyro
 
 ```{r}
 time_difference_step2 <- CalculateTimeDifference(acc_result_step2, gyro_result_step2)
-gyro_on_acc_time_step2 <- GyroOnAccTime(acc_result_step2, gyro_result_step2,time_difference_step2)
+revised_data_step2 <- getRevisedData(acc_result_step2, gyro_result_step2, combined_result_step2, time_difference_step2)
 
-revised_acc_step2 <- RemoveNAs(acc_result_step2)
-revised_gyro_on_acc_step2 <- RemoveNAs(gyro_on_acc_time_step2)
-revised_combined_step2 <- RemoveNAs(combined_result_step2)
+revised_acc_step2 <- revised_data_step2[["revised_acc"]]
+revised_gyro_on_acc_step2 <- revised_data_step2[["revised_gyro_on_acc"]]
+revised_combined_step2 <- revised_data_step2[["revised_combined"]]
 
 write.csv(revised_acc_step2, "~/Desktop/csv/subject4/test/Prediction/Step2/revised_acc_front_pred.csv")
 write.csv(revised_gyro_on_acc_step2, "~/Desktop/csv/subject4/test/Prediction/Step2/revised_gyro_on_acc_front_pred.csv")
@@ -94,11 +92,11 @@ gyro_result_step3_fastWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/S
 
 ```{r}
 time_difference_step3_fastWalk <- CalculateTimeDifference(acc_result_step3_fastWalk, gyro_result_step3_fastWalk)
-gyro_on_acc_time_step3_fastWalk <- GyroOnAccTime(acc_result_step3_fastWalk, gyro_result_step3_fastWalk,time_difference_step3_fastWalk)
+revised_data_step3_fastWalk <- getRevisedData(acc_result_step3_fastWalk, gyro_result_step3_fastWalk, combined_result_step3_fastWalk, time_difference_step3_fastWalk)
 
-revised_acc_step3_fastWalk <- RemoveNAs(acc_result_step3_fastWalk)
-revised_gyro_on_acc_step3_fastWalk <- RemoveNAs(gyro_on_acc_time_step3_fastWalk)
-revised_combined_step3_fastWalk <- RemoveNAs(combined_result_step3_fastWalk)
+revised_acc_step3_fastWalk <- revised_data_step3_fastWalk[["revised_acc"]]
+revised_gyro_on_acc_step3_fastWalk <- revised_data_step3_fastWalk[["revised_gyro_on_acc"]]
+revised_combined_step3_fastWalk <- revised_data_step3_fastWalk[["revised_combined"]]
 
 write.csv(revised_acc_step3_fastWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/fast_walk/revised_acc_front_pred_fast.csv")
 write.csv(revised_gyro_on_acc_step3_fastWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/fast_walk/revised_gyro_on_acc_front_pred_fast.csv")
@@ -126,11 +124,11 @@ gyro_result_step3_normalWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction
 
 ```{r}
 time_difference_step3_normalWalk <- CalculateTimeDifference(acc_result_step3_normalWalk, gyro_result_step3_normalWalk)
-gyro_on_acc_time_step3_normalWalk <- GyroOnAccTime(acc_result_step3_normalWalk, gyro_result_step3_normalWalk,time_difference_step3_normalWalk)
+revised_data_step3_normalWalk <- getRevisedData(acc_result_step3_normalWalk, gyro_result_step3_normalWalk, combined_result_step3_normalWalk, time_difference_step3_normalWalk)
 
-revised_acc_step3_normalWalk <- RemoveNAs(acc_result_step3_normalWalk)
-revised_gyro_on_acc_step3_normalWalk <- RemoveNAs(gyro_on_acc_time_step3_normalWalk)
-revised_combined_step3_normalWalk <- RemoveNAs(combined_result_step3_normalWalk)
+revised_acc_step3_normalWalk <- revised_data_step3_normalWalk[["revised_acc"]]
+revised_gyro_on_acc_step3_normalWalk <- revised_data_step3_normalWalk[["revised_gyro_on_acc"]]
+revised_combined_step3_normalWalk <- revised_data_step3_normalWalk[["revised_combined"]]
 
 write.csv(revised_acc_step3_normalWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/normal_walk/revised_acc_front_pred_normal.csv")
 write.csv(revised_gyro_on_acc_step3_normalWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/normal_walk/revised_gyro_on_acc_front_pred_normal.csv")
@@ -158,13 +156,11 @@ gyro_result_step3_slowWalk <- read.csv("~/Desktop/csv/subject4/test/Prediction/S
 
 ```{r}
 time_difference_step3_slowWalk <- CalculateTimeDifference(acc_result_step3_slowWalk, gyro_result_step3_slowWalk)
-gyro_on_acc_time_step3_slowWalk <- GyroOnAccTime(acc_result_step3_slowWalk, gyro_result_step3_slowWalk,time_difference_step3_slowWalk)
+revised_data_step3_slowWalk <- getRevisedData(acc_result_step3_slowWalk, gyro_result_step3_slowWalk, combined_result_step3_slowWalk, time_difference_step3_slowWalk)
 
-revised_acc_step3_slowWalk <- RemoveNAs(acc_result_step3_slowWalk)
-revised_gyro_on_acc_step3_slowWalk <- RemoveNAs(gyro_on_acc_time_step3_slowWalk)
-revised_combined_step3_slowWalk <- RemoveNAs(combined_result_step3_slowWalk)
-revised_data_step3_slowWalk <- RemoveExtra(revised_acc_step3_slowWalk, revised_gyro_on_acc_step3_slowWalk)
-revised_gyro_on_acc_step3_slowWalk <- revised_data_step3_slowWalk
+revised_acc_step3_slowWalk <- revised_data_step3_slowWalk[["revised_acc"]]
+revised_gyro_on_acc_step3_slowWalk <- revised_data_step3_slowWalk[["revised_gyro_on_acc"]]
+revised_combined_step3_slowWalk <- revised_data_step3_slowWalk[["revised_combined"]]
 
 write.csv(revised_acc_step3_slowWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/slow_walk/revised_acc_front_pred_slow.csv")
 write.csv(revised_gyro_on_acc_step3_slowWalk, "~/Desktop/csv/subject4/test/Prediction/Step3/slow_walk/revised_gyro_on_acc_front_pred_slow.csv")
@@ -191,11 +187,11 @@ gyro_result_step5 <- read.csv("~/Desktop/csv/subject4/test/Prediction/Step5/gyro
 
 ```{r}
 time_difference_step5 <- CalculateTimeDifference(acc_result_step5, gyro_result_step5)
-gyro_on_acc_time_step5 <- GyroOnAccTime(acc_result_step5, gyro_result_step5, time_difference_step5)
+revised_data_step5 <- getRevisedData(acc_result_step5, gyro_result_step5, combined_result_step5, time_difference_step5)
 
-revised_acc_step5 <- RemoveNAs(acc_result_step5)
-revised_gyro_on_acc_step5 <- RemoveNAs(gyro_on_acc_time_step5)
-revised_combined_step5 <- RemoveNAs(combined_result_step5)
+revised_acc_step5 <- revised_data_step5[["revised_acc"]]
+revised_gyro_on_acc_step5 <- revised_data_step5[["revised_gyro_on_acc"]]
+revised_combined_step5 <- revised_data_step5[["revised_combined"]]
 
 write.csv(revised_acc_step5, "~/Desktop/csv/subject4/test/Prediction/Step5/revised_acc_front_pred.csv")
 write.csv(revised_gyro_on_acc_step5, "~/Desktop/csv/subject4/test/Prediction/Step5/revised_gyro_on_acc_front_pred.csv")
@@ -222,11 +218,11 @@ gyro_result_step6_stairDown <- read.csv("~/Desktop/csv/subject4/test/Prediction/
 
 ```{r}
 time_difference_step6_stairDown <- CalculateTimeDifference(acc_result_step6_stairDown, gyro_result_step6_stairDown)
-gyro_on_acc_time_step6_stairDown <- GyroOnAccTime(acc_result_step6_stairDown, gyro_result_step6_stairDown, time_difference_step6_stairDown)
+revised_data_step6_stairDown <- getRevisedData(acc_result_step6_stairDown, gyro_result_step6_stairDown, combined_result_step6_stairDown, time_difference_step6_stairDown)
 
-revised_acc_step6_stairDown <- RemoveNAs(acc_result_step6_stairDown)
-revised_gyro_on_acc_step6_stairDown <- RemoveNAs(gyro_on_acc_time_step6_stairDown)
-revised_combined_step6_stairDown <- RemoveNAs(combined_result_step6_stairDown)
+revised_acc_step6_stairDown <- revised_data_step6_stairDown[["revised_acc"]]
+revised_gyro_on_acc_step6_stairDown <- revised_data_step6_stairDown[["revised_gyro_on_acc"]]
+revised_combined_step6_stairDown <- revised_data_step6_stairDown[["revised_combined"]]
 
 write.csv(revised_acc_step6_stairDown, "~/Desktop/csv/subject4/test/Prediction/Step6/stairDown/revised_acc_front_pred.csv")
 write.csv(revised_gyro_on_acc_step6_stairDown, "~/Desktop/csv/subject4/test/Prediction/Step6/stairDown/revised_gyro_on_acc_front_pred.csv")
@@ -253,11 +249,11 @@ gyro_result_step6_stairUp <- read.csv("~/Desktop/csv/subject4/test/Prediction/St
 
 ```{r}
 time_difference_step6_stairUp <- CalculateTimeDifference(acc_result_step6_stairUp, gyro_result_step6_stairUp)
-gyro_on_acc_time_step6_stairUp <- GyroOnAccTime(acc_result_step6_stairUp, gyro_result_step6_stairUp, time_difference_step6_stairUp)
+revised_data_step6_stairUp <- getRevisedData(acc_result_step6_stairUp, gyro_result_step6_stairUp, combined_result_step6_stairUp, time_difference_step6_stairUp)
 
-revised_acc_step6_stairUp <- RemoveNAs(acc_result_step6_stairUp)
-revised_gyro_on_acc_step6_stairUp <- RemoveNAs(gyro_on_acc_time_step6_stairUp)
-revised_combined_step6_stairUp <- RemoveNAs(combined_result_step6_stairUp)
+revised_acc_step6_stairUp <- revised_data_step6_stairUp[["revised_acc"]]
+revised_gyro_on_acc_step6_stairUp <- revised_data_step6_stairUp[["revised_gyro_on_acc"]]
+revised_combined_step6_stairUp <- revised_data_step6_stairUp[["revised_combined"]]
 
 write.csv(revised_acc_step6_stairUp, "~/Desktop/csv/subject4/test/Prediction/Step6/stairUp/revised_acc_front_pred.csv")
 write.csv(revised_gyro_on_acc_step6_stairUp, "~/Desktop/csv/subject4/test/Prediction/Step6/stairUp/revised_gyro_on_acc_front_pred.csv")
