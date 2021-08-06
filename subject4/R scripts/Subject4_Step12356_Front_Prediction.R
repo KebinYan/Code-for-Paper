@@ -1,5 +1,4 @@
 library(data.table)
-library(gridExtra)
 source("~/Desktop/WFU/URECA/R_template/six axes/Modified Movelet Method.R")
 source("~/Desktop/WFU/URECA/R_template/Combine Acc and Gyro Data Using Linear Interpolation.R")
 
@@ -186,7 +185,7 @@ front_sitToStand <- subset(chairStand1_front, label == "sitToStand1")
 front_standToSit <- subset(chairStand1_front, label == "standToSit1")
 
 # create a training set with all activities
-trainingSet <- rbind.data.frame(trainWalk, trainStand, trainStairUp, trainStairDown, front_sit, front_sitToStand, front_standToSit)
+trainingSet <- rbind.data.frame(trainWalk, trainStand, trainStairUp, trainStairDown, trainSit, front_sitToStand, front_standToSit)
 
 # change the label in training set to the same notations as in the test set
 for(i in 1:nrow(trainingSet)){
@@ -364,3 +363,43 @@ gyro_result_step6_stairDown <- movelet_Bai2012_singleSensor_modified(test_gyro_f
 write.csv(gyro_result_step6_stairDown, "~/Desktop/csv/subject4/test/Prediction/Step6/stairDown/gyro_front_pred.csv")
 gyro_result_step6_stairUp <- movelet_Bai2012_singleSensor_modified(test_gyro_front_step6_stairUp, gyro_axes_step6_stairUp, gyro_training, frequency, moveletLength, distOption, trainingActivities, useMag)
 write.csv(gyro_result_step6_stairUp, "~/Desktop/csv/subject4/test/Prediction/Step6/stairUp/gyro_front_pred.csv")
+
+# prediction plots
+activityList <- c("walk", "stand","stairUp", "stairDown","standToSit","sit","sitToStand")
+
+##activityCols = the colors corresponding to the activities
+activityCols <- c("#000000", "#56B4E9", "#E69F00", "#009E73", "#F0E442", "#CC79A7", "#D55E00")
+
+##xRange is a time elapsed range 
+##if NA, xRange is set to the min and max of timeElapsed in the result data frame
+xRange <- NA
+
+##Make a two panel plot
+##true labels on the top
+##predicted labels on the bottom
+plotActivityPrediction(combined_result_step1, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(combined_result_step2, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(combined_result_step3_fastWalk, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(combined_result_step3_normalWalk, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(combined_result_step3_slowWalk, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(combined_result_step5, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(combined_result_step6_stairUp, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(combined_result_step6_stairDown, xRange, activityList, activityCols, TRUE)
+
+plotActivityPrediction(acc_result_step1, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(acc_result_step2, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(acc_result_step3_fastWalk, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(acc_result_step3_normalWalk, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(acc_result_step3_slowWalk, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(acc_result_step5, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(acc_result_step6_stairDown, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(acc_result_step6_stairUp, xRange, activityList, activityCols, TRUE)
+
+plotActivityPrediction(gyro_result_step1, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(gyro_result_step2, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(gyro_result_step3_fastWalk, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(gyro_result_step3_normalWalk, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(gyro_result_step3_slowWalk, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(gyro_result_step5, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(gyro_result_step6_stairDown, xRange, activityList, activityCols, TRUE)
+plotActivityPrediction(gyro_result_step6_stairUp, xRange, activityList, activityCols, TRUE)

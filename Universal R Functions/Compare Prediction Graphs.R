@@ -8,6 +8,7 @@ GyroOnAccTime <- function(accResult, gyroResult, timeDifference){
     for(j in 1:nrow(gyroResult)){
       if(timeDifference$closest_gyro_timestamp[i] == gyroResult$timestamp[j]){
         gyro_data <- gyroResult[j,]
+        gyro_data$label <- accResult$label[i]
         break
       }
     }
@@ -26,20 +27,34 @@ RemoveNAs <- function(result){
 }
 
 # remove the extra end point in accelerometer result or in the gyroscope on accelerometer result
-RemoveExtra <- function(revised_acc, revised_gyro_on_acc){
+RemoveExtra <- function(revised_acc, revised_gyro_on_acc, revised_combined){
   nrow_acc <- nrow(revised_acc)
   nrow_gyro <- nrow(revised_gyro_on_acc)
+  nrow_combined <- nrow(revised_combined)
+  minRow <- min(nrow_acc, nrow_gyro, nrow_combined)
   
-  if(nrow_acc > nrow_gyro){
+  if(nrow_acc > minRow){
     revised_acc <- revised_acc[-nrow_acc,]
-    print("acc revised")
-    return(revised_acc)
   }
-  else if(nrow_gyro > nrow_acc){
+  if(nrow_gyro > minRow){
     revised_gyro_on_acc <- revised_gyro_on_acc[-nrow_gyro,]
-    print("gyro revised")
-    return(revised_gyro_on_acc)
   }
+  if(nrow_combined > minRow){
+    revised_combined <- revised_combined[-nrow_combined,]
+  }
+  
+  out <- list(revised_acc = revised_acc, revised_gyro_on_acc = revised_gyro_on_acc, revised_combined = revised_combined)
+  return(out)
+}
+
+# revise accelerometer, gyroscope, and combined prediction data sets so all three of them have same amount of data on same timestamps
+getRevisedData <- function(accResult, gyroResult, combinedResult, timeDifference){
+  gyro_on_acc <- GyroOnAccTime(accResult, gyroResult, timeDifference)
+  revised_acc <- RemoveNAs(accResult)
+  revised_gyro_on_acc <- RemoveNAs(gyro_on_acc)
+  revised_combined <- RemoveNAs(combinedResult)
+  revised_data <- RemoveExtra(revised_acc, revised_gyro_on_acc, revised_combined)
+  return(revised_data)
 }
 
 # create a graph comparing true labels, accelerometer predicitons, gyroscope predcitions, and combined data predictions
