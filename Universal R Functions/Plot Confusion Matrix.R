@@ -39,8 +39,7 @@ plotConfusionMatrix <- function(result, Activities, Legend){
   confusionMat <- na.omit(confusionMat)
   if(!Legend){
     ggplot(confusionMat, aes(x = colname, y= rowname, fill=percentage)) + geom_tile() + theme_bw() + coord_equal() + scale_fill_distiller(palette="Blues", direction=1, limits = range(0:100)) + geom_text(aes(label=percentage), color="black", size = 4.5) + xlab("Truth") + ylab("Prediction") + theme(axis.text.x = element_text(angle=15, size = 13, vjust = 0.5), axis.text.y = element_text(size = 13), text = element_text(size = 13), legend.position = "none")
-  }
-  else{
+  } else{
     ggplot(confusionMat, aes(x = colname, y= rowname, fill=percentage)) + geom_tile() + theme_bw() + coord_equal() + scale_fill_distiller(palette="Blues", direction=1, limits = range(0:100)) + geom_text(aes(label=percentage), color="black", size = 4.5) + xlab("Truth") + ylab("Prediction") + theme(axis.text.x = element_text(angle=15, size = 13, vjust = 0.5), axis.text.y = element_text(size = 13), text = element_text(size = 13), legend.position = "right", legend.title = element_text(size = 13))
   }
 }

@@ -187,8 +187,7 @@ plotActivityPrediction <- function(result, xRange, activityList, activityCols, l
   
   if(legend){
     par(mfrow = c(3,1))
-  }
-  else{
+  } else{
     par(mfrow = c(2,1))
   }
   

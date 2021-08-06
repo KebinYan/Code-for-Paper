@@ -76,8 +76,7 @@ combinedPlotActivityPrediction <- function(accResult, gyroResult, combinedResult
   
   if(legend){
     par(mfrow = c(5,1)) 
-  }
-  else{
+  } else{
     par(mfrow = c(4,1))
   }
   par(mar=c(3,1,3,1))
