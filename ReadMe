@@ -3,7 +3,7 @@ Files Explanation:
 “Universal R Functions” contain all universal R codes.
  - "Modified Movelet Method" contains the modified movelet method and a write-up document explaining the function logic.
  - "Combine Acc and Gyro Data Using Linear Interpolation.R" takes in an accelerometer dataset and a gyroscope dataset, and returns a combined dataset with gyroscope data interpolated on accelerometer timestamp.
- - "Compare Prediction Graphs.R" contains four functions.
+ - "Compare Prediction Graphs.R" contains five functions.
     - "GyroOnAccTime" returns a subset of gyroscope result on accelerometer's timestamp.
     - "RemoveNAs" removes all rows with NAs for their final predictions.
     - "RemoveExtra" removes the extra end point in accelerometer result or in the gyroscope on accelerometer result.
