@@ -7,6 +7,7 @@ Files Explanation:
     - "GyroOnAccTime" returns a subset of gyroscope result on accelerometer's timestamp.
     - "RemoveNAs" removes all rows with NAs for their final predictions.
     - "RemoveExtra" removes the extra end point in accelerometer result or in the gyroscope on accelerometer result.
+    - "getRevisedData" revises accelerometer, gyroscope, and combined prediction data sets so all three of them have same amount of data on same timestamps.
     - "combinedPlotActivityPrediction" creates a graph comparing true labels, accelerometer predicitons, gyroscope predcitions, and combined data predictions.
  - "Examining Time Difference.R" contains two functions.
     - "CalculateTimeDifference" calculates the time difference between each gyroscope timestamp and the closest accelerometer timestamp.
