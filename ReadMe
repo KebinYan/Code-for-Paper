@@ -13,6 +13,7 @@ Files Explanation:
     - "CalculateTimeDifference" calculates the time difference between each gyroscope timestamp and the closest accelerometer timestamp.
     - "GraphTimeDifference" plots the time difference for all data points.
  - "Plot Confusion Matrix.R" includes a function to create confusion matrix for a result data set.
+ - "Calculate the Amount of Test Data.R" calculates the number of observations for each activity in the test data.
   
 "subject1", "subject2", "subject3", and "subject4" have the same format except "subject1" contains training data plots.
   - R scripts: contain R codes applying modified movelet method to each subject's data.
