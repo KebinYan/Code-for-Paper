@@ -15,11 +15,5 @@ Files Explanation:
  - "Plot Confusion Matrix.R" includes a function to create confusion matrix for a result data set.
  - "Calculate the Amount of Test Data.R" calculates the number of observations for each activity in the test data.
   
-"subject1", "subject2", "subject3", and "subject4" have the same format except "subject1" contains training data plots.
-  - R scripts: contain R codes applying modified movelet method to each subject's data.
-  - Results: 
-    - "Confusion Matrices" contains confusion matrices for steps 1, 2, 3, 5, 6, and all steps with accelerometer-only, gyroscope-only, and combined data, as well as the R codes to produce these confusion matrices.
-    - "Prediction Datasets" contains datasets for steps 1, 2, 3, 5, and 6 returned by modified movelet method.
-    - "Comparison Graphs" conatins comparison graphs for steps 1, 2, 3, 5, and 6, as well as the R codes to produce these comparsion graphs.
-  - Test Data: contains test data for steps 1, 2, 3, 5, and 6. 
-  - Training Data: contains the combined training data on accelerometer timestamps
+"subject1", "subject2", "subject3", and "subject4" have the same format.
+  - R scripts: contain R codes applying modified movelet method to each subject's data, creating confusion matrices for each step and all steps together, as well as plotting comparison graphs for each step.
